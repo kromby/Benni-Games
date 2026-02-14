@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>life2.0</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1 class="game-title">life2.0</h1>
+    <div class="stats">
+      <div class="stat" title="Orka">
+        <span class="stat-label" data-i18n="energy">Orka</span>
+        <div class="stat-bar-wrap"><div id="energy-bar" class="stat-bar" style="width: 80%"></div></div>
+        <span id="energy-value" class="stat-value">80</span>%
+      </div>
+      <div class="stat" title="Skap">
+        <span class="stat-label" data-i18n="mood">Skap</span>
+        <div class="stat-bar-wrap"><div id="mood-bar" class="stat-bar stat-bar-mood" style="width: 70%"></div></div>
+        <span id="mood-value" class="stat-value">70</span>%
+      </div>
+      <div class="stat stat-money">
+        <span class="stat-label" data-i18n="money">Peningar</span>
+        <span id="money-value" class="stat-value">0</span>
+      </div>
+      <div class="stat stat-time">
+        <span class="stat-label" data-i18n="time">Tími</span>
+        <span id="time-value" class="stat-value" data-i18n-value="day">Dagur</span>
+      </div>
+      <div class="stat stat-day">
+        <span class="stat-label" data-i18n="dayCount">Dagur</span>
+        <span id="day-value" class="stat-value">1</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" id="lang-toggle" class="lang-toggle" aria-label="Skipta tungumáli">IS</button>
+      <button type="button" id="reset-btn" class="reset-btn" data-i18n="newGame">Byrja upp á nýtt</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <a href="../../index.html" class="back-link" data-i18n="back">← Til baka</a>
+
+    <section class="room" aria-label="Herbergi">
+      <p class="room-prompt" data-i18n="whatToDo">Hvað viltu gera?</p>
+      <div class="room-actions">
+        <button type="button" class="room-btn" data-action="sleep" aria-label="Sofa">
+          <span class="room-btn-icon">🛏️</span>
+          <span class="room-btn-label" data-i18n="sleep">Sofa</span>
+        </button>
+        <button type="button" class="room-btn" data-action="eat" aria-label="Borða">
+          <span class="room-btn-icon">🍽️</span>
+          <span class="room-btn-label" data-i18n="eat">Borða</span>
+        </button>
+        <button type="button" class="room-btn" data-action="computer" aria-label="Tölva">
+          <span class="room-btn-icon">💻</span>
+          <span class="room-btn-label" data-i18n="computer">Tölva</span>
+        </button>
+        <button type="button" class="room-btn" data-action="work" aria-label="Fara í vinnu">
+          <span class="room-btn-icon">💼</span>
+          <span class="room-btn-label" data-i18n="work">Fara í vinnu</span>
+        </button>
+        <button type="button" class="room-btn" data-action="shop" aria-label="Verslun">
+          <span class="room-btn-icon">🛒</span>
+          <span class="room-btn-label" data-i18n="shop">Kaupa mat</span>
+        </button>
+      </div>
+      <p class="food-inventory" id="food-display">
+        <span data-i18n="foodStock">Matur í birgðum:</span> <span id="food-value">0</span>
+      </p>
+    </section>
+  </main>
+
+  <div id="shop-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h2 class="modal-title" data-i18n="shopTitle">Verslun</h2>
+      <button type="button" class="modal-close" id="shop-close" aria-label="Loka">×</button>
+      <p class="shop-desc" data-i18n="shopDesc">Kaupa mat kostar peninga og bætir mat í birgðir. Þú getur borðað síðar.</p>
+      <div class="shop-options">
+        <button type="button" class="shop-option" data-buy="1" data-cost="10">
+          <span data-i18n="buy1">1 matur</span> – 10 kr
+        </button>
+        <button type="button" class="shop-option" data-buy="5" data-cost="45">
+          <span data-i18n="buy5">5 matir</span> – 45 kr
+        </button>
+        <button type="button" class="shop-option" data-buy="10" data-cost="85">
+          <span data-i18n="buy10">10 matir</span> – 85 kr
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

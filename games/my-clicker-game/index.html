@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FH – Leikur</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>FH</h1>
+    <div class="score-wrap">
+      <span id="kokur-display">0</span> FH
+    </div>
+    <div class="cps-wrap">
+      <span id="cps-display">0</span> FH/s
+    </div>
+    <button type="button" id="shop-trigger" class="shop-trigger" aria-label="Opna verslun">
+      <span class="shop-trigger-icon-wrap">
+        <span class="shop-trigger-icon">🏪</span>
+        <span id="shop-badge" class="shop-badge" aria-hidden="true"></span>
+      </span>
+      <span class="shop-trigger-label">Verslun</span>
+    </button>
+  </header>
+
+  <main class="main">
+    <a href="../../index.html" class="back-link">← Til baka</a>
+    <button type="button" id="kaka-btn" class="kaka-btn fh-btn" aria-label="Smellu fyrir FHing">
+      <img class="fh-logo" src="https://fh.is/wp-content/uploads/2021/12/fh-icon.svg" alt="FH" width="120" height="120" draggable="false">
+    </button>
+    <a class="fh-link" href="https://fh.is" target="_blank" rel="noopener">Kíkja á FH.is</a>
+  </main>
+
+  <div id="shop-modal" class="shop-modal hidden" aria-hidden="true">
+    <div class="shop-modal-backdrop"></div>
+    <div class="shop-modal-content">
+      <h2 class="shop-modal-title">Verslun</h2>
+      <button type="button" class="shop-modal-close" aria-label="Loka">×</button>
+
+      <section class="shop-section">
+        <h3>Uppfærslur (á smell)</h3>
+        <div id="upgrades-list" class="shop-list"></div>
+      </section>
+
+      <section class="shop-section">
+        <h3>Uppfærslur (á sekúndu)</h3>
+        <div id="upgrades-cps-list" class="shop-list"></div>
+      </section>
+
+      <section class="shop-section">
+        <h3>Byggingar (FH/s)</h3>
+        <div id="buildings-list" class="shop-list"></div>
+      </section>
+
+      <section class="shop-section shop-section-rebirth">
+        <h3>Endurfæðing</h3>
+        <p class="rebirth-desc">Byrja upp á nýtt. Næsta endurfæðing gefur <span id="rebirth-mult-display">2x</span> allar tekjur.</p>
+        <button type="button" id="rebirth-btn" class="rebirth-btn" disabled>Endurfæðing (<span id="rebirth-cost-display">—</span>)</button>
+      </section>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

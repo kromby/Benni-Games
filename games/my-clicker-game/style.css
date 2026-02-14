@@ -1,0 +1,366 @@
+:root {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-hover: #262626;
+  --text: #f5f5f5;
+  --accent: #e6b800;
+  --accent-hover: #f0c810;
+  --disabled: #555;
+  --border: #333;
+  --accent-blue: #2563eb;
+  --accent-purple: #7c3aed;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header"
+    "main";
+}
+
+.header {
+  grid-area: header;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.shop-trigger {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.shop-trigger:hover {
+  background: var(--surface-hover);
+  transform: scale(1.03);
+}
+
+.shop-trigger:active {
+  transform: scale(0.98);
+}
+
+.shop-trigger-icon-wrap {
+  position: relative;
+  line-height: 1;
+}
+
+.shop-trigger-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.shop-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.shop-badge.visible {
+  opacity: 1;
+}
+
+.shop-trigger-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+.score-wrap {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.cps-wrap {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.main {
+  grid-area: main;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.back-link {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.15s;
+}
+
+.back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.kaka-btn {
+  width: 200px;
+  height: 200px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c9a600, #8b7500);
+  box-shadow:
+    0 8px 0 #5c5000,
+    0 12px 24px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kaka-btn:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 10px 0 #5c5000,
+    0 14px 28px rgba(0, 0, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+.kaka-btn:active {
+  transform: scale(0.98);
+  box-shadow:
+    0 4px 0 #5c5000,
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.kaka-emoji {
+  font-size: 6rem;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.fh-btn .fh-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.fh-link {
+  font-size: 1rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+.fh-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.shop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.shop-modal.hidden {
+  display: none;
+}
+
+.shop-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.shop-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.shop-modal-title {
+  margin: 0 2rem 1rem 0;
+  font-size: 1.35rem;
+  color: var(--accent);
+}
+
+.shop-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.shop-modal-close:hover {
+  background: var(--surface-hover);
+}
+
+.shop-section {
+  margin-bottom: 1.5rem;
+}
+
+.shop-section h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.shop-item .name {
+  font-weight: 600;
+}
+
+.shop-item .meta {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.shop-item button {
+  margin-top: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.shop-item button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.shop-item button:disabled {
+  background: var(--disabled);
+  color: var(--text);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.shop-section-rebirth {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--border);
+}
+
+.rebirth-desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.rebirth-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(145deg, #5b21b6, #4c1d95);
+  color: var(--text);
+  border: 2px solid #6d28d9;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.rebirth-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #6d28d9, #5b21b6);
+  transform: scale(1.02);
+}
+
+.rebirth-btn:disabled {
+  background: var(--bg);
+  border-color: var(--disabled);
+  color: var(--disabled);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+@media (max-width: 700px) {
+  .shop-trigger {
+    margin-left: 0;
+  }
+}
