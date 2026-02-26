@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  var SAVE_KEY = "fh-clicker-save";
+  var AUTOSAVE_INTERVAL_MS = 30000; // 30 sekúndur
+
   // ─── State ─────────────────────────────────────────────────────────────
   var kokur = 0;
   var kokurPerSmell = 1;
@@ -57,6 +60,73 @@
     kokurPerSekunda = baseCps * mult;
   }
 
+  function recomputeKokurPerSmell() {
+    kokurPerSmell = 1;
+    upgrades.forEach(function (u) {
+      if (u.multiply) kokurPerSmell *= Math.pow(2, u.owned);
+      else if (u.bonus) kokurPerSmell += u.owned * u.bonus;
+    });
+  }
+
+  // ─── Autosave ───────────────────────────────────────────────────────────
+  function getSaveData() {
+    return {
+      kokur: kokur,
+      kokurPerSmell: kokurPerSmell,
+      kokurPerSekunda: kokurPerSekunda,
+      lastTime: lastTime,
+      rebirthCount: rebirthCount,
+      upgradeOwned: upgrades.map(function (u) { return u.owned; }),
+      buildingOwned: buildings.map(function (b) { return b.owned; }),
+    };
+  }
+
+  function save() {
+    try {
+      var data = getSaveData();
+      data.lastTime = performance.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn("FH clicker: ekki tókst að vista:", e);
+    }
+  }
+
+  function loadSave() {
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (!data || typeof data.kokur !== "number") return;
+
+      kokur = data.kokur;
+      rebirthCount = data.rebirthCount || 0;
+      lastTime = typeof data.lastTime === "number" ? data.lastTime : performance.now();
+
+      if (Array.isArray(data.upgradeOwned)) {
+        data.upgradeOwned.forEach(function (owned, i) {
+          if (upgrades[i] && typeof owned === "number") upgrades[i].owned = owned;
+        });
+      }
+      if (Array.isArray(data.buildingOwned)) {
+        data.buildingOwned.forEach(function (owned, i) {
+          if (buildings[i] && typeof owned === "number") buildings[i].owned = owned;
+        });
+      }
+
+      recomputeKokurPerSmell();
+      updateCps();
+
+      // Offline framvinda: bæta við FH fyrir tíma sem liðinn er síðan lastTime
+      var dt = (performance.now() - lastTime) / 1000;
+      if (dt > 0 && dt < 86400 * 7) {
+        kokur += kokurPerSekunda * rebirthMultiplier() * dt;
+      }
+      lastTime = performance.now();
+    } catch (e) {
+      console.warn("FH clicker: ekki tókst að hlaða vistu:", e);
+    }
+  }
+
   function formatNumber(n) {
     if (n >= 1e9) return (n / 1e9).toFixed(1) + " mrð.";
     if (n >= 1e6) return (n / 1e6).toFixed(1) + " mln.";
@@ -67,6 +137,7 @@
   // ─── DOM refs ────────────────────────────────────────────────────────────
   var kokurDisplay = document.getElementById("kokur-display");
   var cpsDisplay = document.getElementById("cps-display");
+  var perClickDisplay = document.getElementById("per-click-display");
   var kakaBtn = document.getElementById("kaka-btn");
   var upgradesList = document.getElementById("upgrades-list");
   var upgradesCpsList = document.getElementById("upgrades-cps-list");
@@ -85,6 +156,10 @@
     kokurDisplay.textContent = formatNumber(kokur);
     var cpsShown = kokurPerSekunda * rebirthMultiplier();
     cpsDisplay.textContent = cpsShown % 1 === 0 ? cpsShown : cpsShown.toFixed(1);
+    var perClick = kokurPerSmell * rebirthMultiplier();
+    if (perClickDisplay) {
+      perClickDisplay.textContent = perClick % 1 === 0 ? perClick : perClick.toFixed(1);
+    }
   }
 
   function renderOneUpgrade(u, listEl) {
@@ -197,6 +272,7 @@
     }
     if (u.cps || u.cpsMultiply) updateCps();
     render();
+    save();
   }
 
   function buyBuilding(b) {
@@ -206,6 +282,7 @@
     b.owned += 1;
     updateCps();
     render();
+    save();
   }
 
   function doRebirth() {
@@ -222,6 +299,7 @@
     rebirthCount += 1;
     updateCps();
     render();
+    save();
   }
 
   // ─── Game loop ─────────────────────────────────────────────────────────
@@ -264,8 +342,12 @@
   if (rebirthBtn) rebirthBtn.addEventListener("click", doRebirth);
 
   // ─── Init ───────────────────────────────────────────────────────────────
+  loadSave();
   kakaBtn.addEventListener("click", onSmell);
   render();
   lastTime = performance.now();
   requestAnimationFrame(tick);
+
+  setInterval(save, AUTOSAVE_INTERVAL_MS);
+  window.addEventListener("beforeunload", save);
 })();

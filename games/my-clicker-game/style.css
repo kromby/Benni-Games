@@ -112,6 +112,18 @@ body {
 .cps-wrap {
   font-size: 0.95rem;
   opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cps-line {
+  white-space: nowrap;
+}
+
+.per-click-wrap {
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
 .main {
