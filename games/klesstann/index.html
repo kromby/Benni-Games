@@ -13,34 +13,30 @@
     <div class="money-display">💰 <span id="money-display">0</span> kr.</div>
   </header>
 
-  <aside id="stats-panel">
-    <h2>Tölfræði</h2>
-    <table id="stats-table">
-      <tr data-stat="hradi"><td>🏎️ Hraði</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
-      <tr data-stat="kraftur"><td>💪 Kraftur</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
-      <tr data-stat="vopnastyrkur"><td>🔫 Vopnastyrkur</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
-      <tr data-stat="thol"><td>🛡️ Þol</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
-      <tr data-stat="stjornun"><td>🎯 Stjórnun</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
-    </table>
+  <aside id="left-panel">
+    <section id="stats-panel">
+      <h2>Tölfræði</h2>
+      <table id="stats-table">
+        <tr data-stat="hradi"><td>🏎️ Hraði</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
+        <tr data-stat="kraftur"><td>💪 Kraftur</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
+        <tr data-stat="vopnastyrkur"><td>🔫 Vopnastyrkur</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
+        <tr data-stat="thol"><td>🛡️ Þol</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
+        <tr data-stat="stjornun"><td>🎯 Stjórnun</td><td class="stat-bar-cell"><div class="stat-bar"><div class="stat-fill"></div></div></td><td class="stat-value">0</td></tr>
+      </table>
+    </section>
+
+    <section id="inventory-panel">
+      <h2>Hlutir</h2>
+      <div id="inventory-list"></div>
+    </section>
   </aside>
 
   <main id="car-grid"></main>
 
-  <aside id="inventory-panel">
-    <h2>Hlutir</h2>
-    <div id="inventory-list"></div>
+  <aside id="shop-panel">
+    <h2>Verslun</h2>
+    <div id="shop-grid" class="shop-grid"></div>
   </aside>
-
-  <button id="shop-trigger">🛒 Verslun</button>
-
-  <div id="shop-modal" class="shop-modal hidden" aria-hidden="true">
-    <div class="shop-modal-backdrop"></div>
-    <div class="shop-modal-content">
-      <h2 class="shop-modal-title">Verslun</h2>
-      <button type="button" class="shop-modal-close" aria-label="Loka">×</button>
-      <div id="shop-grid" class="shop-grid"></div>
-    </div>
-  </div>
 
   <button id="reset-btn" class="reset-btn" title="Byrja upp á nýtt">🔄</button>
 

@@ -7,8 +7,8 @@
   --accent: #e88a1a;
   --secondary: #f5c518;
   --border: #333;
-  --cell-bg: #222;
-  --cell-chassis: #181818;
+  --cell-bg: transparent;
+  --cell-chassis: rgba(24, 24, 24, 0.7);
   --cell-hover: #2e2e2e;
   --green: #4caf50;
   --red: #f44336;
@@ -17,19 +17,19 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  min-height: 100vh;
+  height: 100vh;
   font-family: "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   display: grid;
   grid-template-areas:
     "header header header"
-    "stats  grid   inv"
-    "stats  grid   inv";
-  grid-template-columns: 200px 1fr 200px;
+    "left   grid   shop";
+  grid-template-columns: 200px 1fr 240px;
   grid-template-rows: auto 1fr;
   gap: 0.75rem;
   padding: 0.75rem;
+  overflow: hidden;
 }
 
 /* Header */
@@ -53,9 +53,7 @@ header#top-bar {
 .back-link:hover { color: var(--text); }
 
 .logo {
-  height: 40px;
-  object-fit: contain;
-  mix-blend-mode: lighten;
+  display: none;
 }
 
 .money-display {
@@ -65,14 +63,21 @@ header#top-bar {
   color: var(--secondary);
 }
 
-/* Stats Panel */
+/* Left Panel (Stats + Inventory) */
+#left-panel {
+  grid-area: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 #stats-panel {
-  grid-area: stats;
   background: var(--surface);
   border-radius: 12px;
   border: 1px solid var(--border);
   padding: 1rem;
-  overflow-y: auto;
 }
 
 #stats-panel h2 {
@@ -120,75 +125,15 @@ header#top-bar {
 .stat-delta.positive { color: var(--green); }
 .stat-delta.negative { color: var(--red); }
 
-/* Car Grid */
-#car-grid {
-  grid-area: grid;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(8, 1fr);
-  gap: 2px;
-  background: var(--surface);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  padding: 6px;
-  touch-action: none;
-  user-select: none;
-}
-
-.grid-cell {
-  background: var(--cell-bg);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  cursor: default;
-  position: relative;
-  aspect-ratio: 1;
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.grid-cell.chassis {
-  background: var(--cell-chassis);
-  border: 1px solid #2a2a2a;
-}
-
-.grid-cell.has-part {
-  cursor: grab;
-}
-
-.grid-cell.has-part:active {
-  cursor: grabbing;
-}
-
-.grid-cell.drag-over {
-  background: #2a3a2a;
-  box-shadow: inset 0 0 0 2px var(--green);
-}
-
-.grid-cell.drag-over-invalid {
-  background: #3a2a2a;
-  box-shadow: inset 0 0 0 2px var(--red);
-}
-
-.grid-cell .part-placed {
-  animation: popIn 0.2s ease;
-}
-
-@keyframes popIn {
-  0% { transform: scale(0.5); opacity: 0; }
-  70% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
 /* Inventory Panel */
 #inventory-panel {
-  grid-area: inv;
   background: var(--surface);
   border-radius: 12px;
   border: 1px solid var(--border);
   padding: 1rem;
+  flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 #inventory-panel h2 {
@@ -238,112 +183,123 @@ header#top-bar {
   text-align: center;
 }
 
-/* Shop Trigger */
-#shop-trigger {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 700;
-  background: var(--accent);
-  color: var(--bg);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(232, 138, 26, 0.4);
-  transition: transform 0.15s, box-shadow 0.15s;
-  z-index: 50;
+/* Car Grid */
+#car-grid {
+  grid-area: grid;
+  display: grid;
+  grid-template-columns: auto repeat(9, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 2px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 6px;
+  touch-action: none;
+  user-select: none;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
-#shop-trigger:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 24px rgba(232, 138, 26, 0.5);
-}
-
-#shop-trigger.has-affordable::after {
+#car-grid::before {
   content: "";
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 12px;
-  height: 12px;
-  background: var(--green);
-  border-radius: 50%;
-  border: 2px solid var(--bg);
+  inset: 0;
+  background: url("images/logo.png") center / 60% no-repeat;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: multiply;
 }
 
-/* Shop Modal */
-.shop-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
+.grid-cell {
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-}
-
-.shop-modal.hidden { display: none; }
-
-.shop-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.shop-modal-content {
+  font-size: 1.4rem;
+  cursor: default;
   position: relative;
-  width: 100%;
-  max-width: 580px;
-  max-height: 90vh;
-  overflow-y: auto;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  z-index: 1;
+}
+
+.row-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  padding-right: 0.3rem;
+  white-space: nowrap;
+  user-select: none;
+  z-index: 1;
+}
+
+.grid-cell.chassis {
+  background: var(--cell-chassis);
+  border-radius: 4px;
+  border: 1px solid rgba(42, 42, 42, 0.7);
+}
+
+.grid-cell.has-part {
+  cursor: grab;
+}
+
+.grid-cell.has-part:active {
+  cursor: grabbing;
+}
+
+.grid-cell.drag-over {
+  background: #2a3a2a;
+  box-shadow: inset 0 0 0 2px var(--green);
+}
+
+.grid-cell.drag-over-invalid {
+  background: #3a2a2a;
+  box-shadow: inset 0 0 0 2px var(--red);
+}
+
+.grid-cell .part-placed {
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Shop Panel (right sidebar) */
+#shop-panel {
+  grid-area: shop;
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  overflow-y: auto;
+  min-height: 0;
 }
 
-.shop-modal-title {
-  margin: 0 2rem 1rem 0;
-  font-size: 1.35rem;
+#shop-panel h2 {
+  font-size: 1rem;
   color: var(--accent);
+  margin-bottom: 0.75rem;
 }
 
-.shop-modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.shop-modal-close:hover { background: var(--surface-hover); }
-
-.shop-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 0.75rem;
+#shop-panel .shop-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .shop-card {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.75rem;
+  padding: 0.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
   transition: border-color 0.15s;
 }
 
@@ -352,35 +308,35 @@ header#top-bar {
 .shop-card .card-top {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
-.shop-card .emoji { font-size: 1.5rem; }
+.shop-card .emoji { font-size: 1.2rem; }
 
 .shop-card .card-info {
   flex: 1;
 }
 
 .shop-card .card-name {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
 .shop-card .card-tier {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--secondary);
 }
 
 .shop-card .card-stats {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-dim);
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .shop-card .card-buy {
-  margin-top: 0.25rem;
-  padding: 0.4rem;
-  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  padding: 0.35rem;
+  font-size: 0.75rem;
   font-weight: 700;
   border: none;
   border-radius: 6px;
@@ -435,22 +391,29 @@ header#top-bar {
     grid-template-areas:
       "header"
       "grid"
-      "stats"
-      "inv";
+      "left"
+      "shop";
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto;
+    height: auto;
+    overflow: auto;
   }
 
-  #stats-panel, #inventory-panel {
-    max-height: 200px;
+  #left-panel {
+    max-height: 300px;
+  }
+
+  #shop-panel {
+    max-height: 400px;
+  }
+
+  #shop-panel .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 
   .grid-cell {
     aspect-ratio: auto;
     min-height: 32px;
-  }
-
-  .shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 }

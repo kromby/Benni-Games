@@ -2,8 +2,8 @@
   "use strict";
 
   // ── Constants ──
-  var GRID_COLS = 12;
-  var GRID_ROWS = 8;
+  var GRID_COLS = 9;
+  var GRID_ROWS = 6;
   var GRID_SIZE = GRID_COLS * GRID_ROWS;
   var SAVE_KEY = "klesstann-save";
   var STARTING_MONEY = 5000;
@@ -17,6 +17,7 @@
   };
   var STAT_KEYS = Object.keys(STAT_NAMES);
   var MAX_STAT_DISPLAY = 200; // bar fills at this value
+  var ROW_LABELS = ["Þak", "Efri búkur", "Miðjuhluti", "Neðri búkur", "Undirvagn", "Hjól"];
 
   // ── Part Types ──
   var PART_TYPES = {
@@ -68,18 +69,18 @@
 
   function buildChassisMask() {
     var mask = new Array(GRID_SIZE).fill(false);
-    // Bottom row: wheels area
-    for (var c = 1; c <= 10; c++) mask[7 * GRID_COLS + c] = true;
-    // Row 6: undercarriage
-    for (var c = 2; c <= 9; c++) mask[6 * GRID_COLS + c] = true;
-    // Row 5: lower body
-    for (var c = 1; c <= 10; c++) mask[5 * GRID_COLS + c] = true;
-    // Row 4: mid body
-    for (var c = 1; c <= 10; c++) mask[4 * GRID_COLS + c] = true;
-    // Row 3: upper body
-    for (var c = 2; c <= 9; c++) mask[3 * GRID_COLS + c] = true;
-    // Row 2: roof
-    for (var c = 3; c <= 8; c++) mask[2 * GRID_COLS + c] = true;
+    // Row 0: roof
+    for (var c = 2; c <= 6; c++) mask[0 * GRID_COLS + c] = true;
+    // Row 1: upper body
+    for (var c = 1; c <= 7; c++) mask[1 * GRID_COLS + c] = true;
+    // Row 2: mid body
+    for (var c = 0; c <= 8; c++) mask[2 * GRID_COLS + c] = true;
+    // Row 3: lower body
+    for (var c = 0; c <= 8; c++) mask[3 * GRID_COLS + c] = true;
+    // Row 4: undercarriage
+    for (var c = 1; c <= 7; c++) mask[4 * GRID_COLS + c] = true;
+    // Row 5: wheels area
+    for (var c = 0; c <= 8; c++) mask[5 * GRID_COLS + c] = true;
     return mask;
   }
 
@@ -97,11 +98,7 @@
   var gridEl = document.getElementById("car-grid");
   var inventoryEl = document.getElementById("inventory-list");
   var moneyEl = document.getElementById("money-display");
-  var shopModal = document.getElementById("shop-modal");
-  var shopBackdrop = shopModal.querySelector(".shop-modal-backdrop");
-  var shopClose = shopModal.querySelector(".shop-modal-close");
   var shopGrid = document.getElementById("shop-grid");
-  var shopTrigger = document.getElementById("shop-trigger");
   var resetBtn = document.getElementById("reset-btn");
 
   // ── Initialization ──
@@ -112,7 +109,6 @@
     renderStats();
     updateMoneyDisplay();
     renderShop();
-    updateShopBadge();
     bindEvents();
     setInterval(saveGame, AUTOSAVE_MS);
   }
@@ -121,6 +117,13 @@
   function renderGrid() {
     gridEl.innerHTML = "";
     for (var i = 0; i < GRID_SIZE; i++) {
+      // Insert row label at the start of each row
+      if (i % GRID_COLS === 0) {
+        var label = document.createElement("div");
+        label.className = "row-label";
+        label.textContent = ROW_LABELS[i / GRID_COLS] || "";
+        gridEl.appendChild(label);
+      }
       var cell = document.createElement("div");
       cell.className = "grid-cell";
       cell.dataset.index = i;
@@ -259,26 +262,8 @@
     updateMoneyDisplay();
     renderInventory();
     renderShop();
-    updateShopBadge();
   }
 
-  function openShop() {
-    renderShop();
-    shopModal.classList.remove("hidden");
-    shopModal.setAttribute("aria-hidden", "false");
-  }
-
-  function closeShop() {
-    shopModal.classList.add("hidden");
-    shopModal.setAttribute("aria-hidden", "true");
-  }
-
-  function updateShopBadge() {
-    var canAfford = SHOP_CATALOG.some(function (item) {
-      return state.money >= item.price;
-    });
-    shopTrigger.classList.toggle("has-affordable", canAfford);
-  }
 
   // ── Drag & Drop (Pointer Events) ──
   function startDrag(catalogId, sourceType, sourceIndex, x, y) {
@@ -375,7 +360,6 @@
     renderGrid();
     renderInventory();
     renderStats();
-    updateShopBadge();
   }
 
   function removeFromSource() {
@@ -411,9 +395,6 @@
   // ── Event Binding (delegation) ──
   function bindEvents() {
     // Shop
-    shopTrigger.addEventListener("click", openShop);
-    shopBackdrop.addEventListener("click", closeShop);
-    shopClose.addEventListener("click", closeShop);
     shopGrid.addEventListener("click", function (e) {
       var btn = e.target.closest(".card-buy");
       if (btn && !btn.disabled) {
@@ -433,7 +414,6 @@
         renderStats();
         updateMoneyDisplay();
         renderShop();
-        updateShopBadge();
       }
     });
 
@@ -485,11 +465,6 @@
     document.addEventListener("pointerup", function (e) {
       if (!dragging) return;
       endDrag(e.clientX, e.clientY);
-    });
-
-    // Keyboard: Escape to close shop
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeShop();
     });
 
     // Save before unload
