@@ -86,7 +86,7 @@
   var spaceEls = [];
 
   // ── View Management ──
-  var homeViewEl, shopViewEl;
+  var homeViewEl, shopViewEl, standingsPanelEl;
 
   // ── Utility Functions ──
   function rollDie(sides) {
@@ -383,7 +383,7 @@
 
     homeViewEl.classList.toggle("hidden", !isHome);
     trackBoardEl.classList.toggle("hidden", !isRacing);
-    standingsListEl.parentElement.classList.toggle("hidden", !isRacing);
+    standingsPanelEl.classList.toggle("hidden", !isRacing);
     document.getElementById("roll-area").classList.toggle("hidden", !isRacing);
     shopViewEl.classList.toggle("hidden", !isShop);
     resultsScreenEl.classList.toggle("hidden", !isFinished);
@@ -748,6 +748,7 @@
     resultsListEl = document.getElementById("results-list");
     homeViewEl = document.getElementById("home-view");
     shopViewEl = document.getElementById("shop-view");
+    standingsPanelEl = document.getElementById("standings-panel");
 
     loadGame();
 
