@@ -46,8 +46,8 @@ Plans:
   5. Three AI opponents automatically spend their money on upgrades they can afford between races
 **Plans:** 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — Economy data model, upgrade tier constants, tier-aware dice/penalties, prize money, save/load, HTML/CSS for home and shop views
-- [ ] 02-02-PLAN.md — Wire home page stats, shop buy mechanics, AI upgrade logic, navigation flow, and human verification
+- [x] 02-01-PLAN.md — Economy data model, upgrade tier constants, tier-aware dice/penalties, prize money, save/load, HTML/CSS for home and shop views
+- [x] 02-02-PLAN.md — Wire home page stats, shop buy mechanics, AI upgrade logic, navigation flow, and human verification
 **UI hint**: yes
 
 ### Phase 3: Platform & Feel
