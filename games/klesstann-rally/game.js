@@ -29,6 +29,16 @@
   // Index 0 unused — tiers are bought from 1 to 4
   var UPGRADE_COSTS = [0, 75, 150, 300, 500, 800];
 
+  // ── AI Personalities (per D-05) ──
+  // preference: "engine", "tires", or "balanced"
+  // saveChance: probability of skipping a purchase to save money (20-30% range)
+  var AI_PERSONALITIES = [
+    null,  // index 0 = player (not used)
+    { preference: "engine",   saveChance: 0.25 },  // A1 (blue): speed-focused
+    { preference: "tires",    saveChance: 0.20 },  // A2 (green): safety-focused
+    { preference: "balanced", saveChance: 0.30 }   // A3 (yellow): balanced
+  ];
+
   var STARTING_MONEY = 100;
 
   // ── Track Coordinates ──
@@ -221,6 +231,150 @@
     renderTrack();
     renderStandings();
     renderHeader();
+  }
+
+  // ── Home Page Rendering (per D-06) ──
+  function renderHome() {
+    var p = cars[0]; // player
+    document.getElementById("stat-races").textContent = state.career.racesCompleted;
+    document.getElementById("stat-wins").textContent = state.career.wins;
+    document.getElementById("stat-earned").textContent = state.career.totalPrizeEarned + " kr.";
+
+    var eTier = UPGRADE_TIERS_ENGINE[p.engineTier];
+    document.getElementById("stat-engine").textContent = "Stig " + p.engineTier + " (" + eTier.min + "-" + eTier.max + ")";
+
+    var tChance = Math.round(UPGRADE_TIERS_TIRES[p.tireTier] * 100);
+    document.getElementById("stat-tires").textContent = "Stig " + p.tireTier + " (" + tChance + "%)";
+
+    // Placement breakdown: "1x1., 2x2., ..."
+    var pl = state.career.placements;
+    var parts = [];
+    var placeLabels = ["1.", "2.", "3.", "4."];
+    for (var i = 0; i < pl.length; i++) {
+      if (pl[i] > 0) {
+        parts.push(pl[i] + "x" + placeLabels[i]);
+      }
+    }
+    document.getElementById("stat-placements").textContent = parts.length > 0 ? parts.join(", ") : "-";
+  }
+
+  // ── Shop Rendering (per D-04) ──
+  function renderShopCard(type) {
+    // type: "engine" or "tires"
+    var player = cars[0];
+    var currentTier = type === "engine" ? player.engineTier : player.tireTier;
+    var nextTier = currentTier + 1;
+    var isMaxed = nextTier > 4;
+
+    var currentEl = document.getElementById("shop-" + type + "-current");
+    var nextEl = document.getElementById("shop-" + type + "-next");
+    var buyBtn = document.getElementById("buy-" + type + "-btn");
+
+    // Current tier display
+    if (type === "engine") {
+      var cur = UPGRADE_TIERS_ENGINE[currentTier];
+      currentEl.textContent = "N\u00fa: Stig " + currentTier + " (" + cur.min + "-" + cur.max + ")";
+    } else {
+      var curChance = Math.round(UPGRADE_TIERS_TIRES[currentTier] * 100);
+      currentEl.textContent = "N\u00fa: Stig " + currentTier + " (" + curChance + "% h\u00e6ging)";
+    }
+
+    if (isMaxed) {
+      nextEl.innerHTML = "<span class=\"shop-maxed\">H\u00e1mark!</span>";
+      buyBtn.style.display = "none";
+    } else {
+      var cost = UPGRADE_COSTS[nextTier];
+      if (type === "engine") {
+        var nxt = UPGRADE_TIERS_ENGINE[nextTier];
+        nextEl.textContent = "N\u00e6st: Stig " + nextTier + " (" + nxt.min + "-" + nxt.max + ") \u2014 " + cost + " kr.";
+      } else {
+        var nxtChance = Math.round(UPGRADE_TIERS_TIRES[nextTier] * 100);
+        nextEl.textContent = "N\u00e6st: Stig " + nextTier + " (" + nxtChance + "% h\u00e6ging) \u2014 " + cost + " kr.";
+      }
+      buyBtn.style.display = "";
+      buyBtn.disabled = player.money < cost;
+      buyBtn.textContent = player.money < cost ? "Efni\u00f0 ekki (" + cost + " kr.)" : "Kaupa \u2014 " + cost + " kr.";
+    }
+  }
+
+  function renderShop() {
+    renderShopCard("engine");
+    renderShopCard("tires");
+  }
+
+  // ── Buy Upgrade ──
+  function buyUpgrade(type) {
+    var player = cars[0];
+    var currentTier = type === "engine" ? player.engineTier : player.tireTier;
+    var nextTier = currentTier + 1;
+    if (nextTier > 4) { return; }
+    var cost = UPGRADE_COSTS[nextTier];
+    if (player.money < cost) { return; }
+
+    player.money -= cost;
+    if (type === "engine") {
+      player.engineTier = nextTier;
+    } else {
+      player.tireTier = nextTier;
+    }
+
+    // Re-render shop and header balance
+    renderShop();
+    lapCounterEl.textContent = player.money + " kr.";
+    saveGame();
+  }
+
+  // ── AI Upgrade Logic (per D-05) ──
+  function aiUpgrade(carIndex) {
+    var car = cars[carIndex];
+    var personality = AI_PERSONALITIES[carIndex];
+    if (!personality) { return; }
+
+    // Save chance: skip buying this round
+    if (Math.random() < personality.saveChance) { return; }
+
+    // Determine which upgrade to attempt based on personality
+    var buyEngine = false;
+    var buyTires = false;
+
+    if (personality.preference === "engine") {
+      // 70% engine, 30% tires
+      buyEngine = Math.random() < 0.7;
+      buyTires = !buyEngine;
+    } else if (personality.preference === "tires") {
+      // 30% engine, 70% tires
+      buyTires = Math.random() < 0.7;
+      buyEngine = !buyTires;
+    } else {
+      // balanced: 50/50
+      buyEngine = Math.random() < 0.5;
+      buyTires = !buyEngine;
+    }
+
+    // Try preferred upgrade first, fall back to other
+    var attempts = buyEngine ? ["engine", "tires"] : ["tires", "engine"];
+    for (var i = 0; i < attempts.length; i++) {
+      var upgradeType = attempts[i];
+      var tier = upgradeType === "engine" ? car.engineTier : car.tireTier;
+      var next = tier + 1;
+      if (next > 4) { continue; }
+      var cost = UPGRADE_COSTS[next];
+      if (car.money < cost) { continue; }
+
+      car.money -= cost;
+      if (upgradeType === "engine") {
+        car.engineTier = next;
+      } else {
+        car.tireTier = next;
+      }
+      return; // AI buys one upgrade per shop visit (per D-05)
+    }
+  }
+
+  function runAiUpgrades() {
+    for (var i = 1; i < cars.length; i++) {
+      aiUpgrade(i);
+    }
   }
 
   // ── View Management ──
@@ -419,6 +573,7 @@
     showDiceResults(results);
     if (state.phase === "finished") {
       showResults();
+      rollBtnEl.style.display = "none";
       showView("finished");
     } else {
       rollBtnEl.disabled = false;
@@ -533,23 +688,46 @@
 
   // ── Event Binding ──
   function bindEvents() {
+    // Roll button (racing)
     rollBtnEl.addEventListener("click", onRollClick);
-    document.getElementById("home-btn-results").addEventListener("click", function () {
-      showView("home");
-    });
+
+    // Home -> Shop (per D-06)
     document.getElementById("go-shop-btn").addEventListener("click", function () {
+      renderShop();
       showView("shop");
     });
+
+    // Home -> Race (per D-06)
+    // AI upgrades happen "between races" — run before each race (per D-05)
     document.getElementById("go-race-btn").addEventListener("click", function () {
+      runAiUpgrades();
       resetRace();
-      renderAll();
       showView("racing");
+      renderAll();
+      rollBtnEl.style.display = "";
+      rollBtnEl.disabled = false;
     });
+
+    // Shop -> Home (per D-04: "Keppa!" in shop returns to home per D-07 flow)
     document.getElementById("shop-race-btn").addEventListener("click", function () {
-      resetRace();
-      renderAll();
-      showView("racing");
+      renderHome();
+      showView("home");
     });
+
+    // Shop buy buttons
+    document.getElementById("buy-engine-btn").addEventListener("click", function () {
+      buyUpgrade("engine");
+    });
+    document.getElementById("buy-tires-btn").addEventListener("click", function () {
+      buyUpgrade("tires");
+    });
+
+    // Results -> Home (per D-07: replaces old restart-btn)
+    document.getElementById("home-btn-results").addEventListener("click", function () {
+      renderHome();
+      showView("home");
+    });
+
     window.addEventListener("beforeunload", saveGame);
   }
 
@@ -564,11 +742,29 @@
     resultsListEl = document.getElementById("results-list");
     homeViewEl = document.getElementById("home-view");
     shopViewEl = document.getElementById("shop-view");
+
     loadGame();
-    showView(state.phase);
-    if (state.phase === "racing" || state.phase === "finished") {
+
+    // Route to correct view based on saved phase
+    if (state.phase === "racing") {
+      showView("racing");
       renderAll();
+      rollBtnEl.style.display = "";
+      rollBtnEl.disabled = false;
+    } else if (state.phase === "finished") {
+      renderAll();
+      showView("finished");
+      showResults();
+      rollBtnEl.style.display = "none";
+    } else if (state.phase === "shop") {
+      renderShop();
+      showView("shop");
+    } else {
+      // Default: home
+      renderHome();
+      showView("home");
     }
+
     bindEvents();
     setInterval(saveGame, AUTOSAVE_MS);
   }
