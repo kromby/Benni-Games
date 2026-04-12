@@ -13,11 +13,67 @@
     <span id="lap-counter" class="lap-counter">Hring 1 af 2</span>
   </header>
 
-  <main id="track-board">
+  <!-- Home View (per D-06) -->
+  <div id="home-view" class="home-view">
+    <div class="home-stats">
+      <h2>Ferill</h2>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <span class="stat-value" id="stat-races">0</span>
+          <span class="stat-label">Keppnir</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-wins">0</span>
+          <span class="stat-label">Sigrar</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-earned">0 kr.</span>
+          <span class="stat-label">Unnið</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-engine">Stig 0</span>
+          <span class="stat-label">V&eacute;l</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-tires">Stig 0</span>
+          <span class="stat-label">Dekk</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-placements">-</span>
+          <span class="stat-label">Sta&eth;a</span>
+        </div>
+      </div>
+    </div>
+    <div class="home-actions">
+      <button id="go-shop-btn" class="home-btn">B&uacute;&eth;</button>
+      <button id="go-race-btn" class="home-btn home-btn-primary">Keppa!</button>
+    </div>
+  </div>
+
+  <!-- Shop View (per D-04) -->
+  <div id="shop-view" class="shop-view hidden">
+    <div class="shop-cards">
+      <div class="shop-card" id="shop-card-engine">
+        <h3>V&eacute;l</h3>
+        <div class="shop-current" id="shop-engine-current"></div>
+        <div class="shop-next" id="shop-engine-next"></div>
+        <button class="shop-buy-btn" id="buy-engine-btn">Kaupa</button>
+      </div>
+      <div class="shop-card" id="shop-card-tires">
+        <h3>Dekk</h3>
+        <div class="shop-current" id="shop-tires-current"></div>
+        <div class="shop-next" id="shop-tires-next"></div>
+        <button class="shop-buy-btn" id="buy-tires-btn">Kaupa</button>
+      </div>
+    </div>
+    <button id="shop-race-btn" class="home-btn home-btn-primary">Keppa!</button>
+  </div>
+
+  <main id="track-board" class="hidden">
     <!-- 20 track-space divs rendered by JS via TRACK_COORDS -->
   </main>
 
-  <aside id="standings-panel">
+  <aside id="standings-panel" class="hidden">
     <h2>Sta&eth;a</h2>
     <div class="standings-header">
       <span class="sh-pos">S&aelig;ti</span>
@@ -29,15 +85,17 @@
     </div>
   </aside>
 
-  <div id="roll-area">
+  <div id="roll-area" class="hidden">
     <button id="roll-btn">Keyra!</button>
     <div id="dice-result"></div>
   </div>
 
   <div id="results-screen" class="hidden">
-    <h2>Lokani&eth;ursta&eth;an</h2>
-    <div id="results-list"></div>
-    <button id="restart-btn">Keppa aftur!</button>
+    <div class="results-inner">
+      <h2>Lokani&eth;ursta&eth;an</h2>
+      <div id="results-list"></div>
+      <button id="home-btn-results" class="home-btn home-btn-primary">Heim</button>
+    </div>
   </div>
 
   <script src="game.js"></script>
