@@ -43,7 +43,7 @@ Declared values (multiples of 4):
 | 3xl | 64px | Page-level spacing — not used in Phase 1 |
 
 Exceptions:
-- Track board gap between cells: 2px (matches klesstann grid-cell gap pattern)
+- Track board gap between cells: 0px (cells flush — no gap between spaces, cleaner track board appearance with borders providing visual separation)
 - Touch target minimum for Roll button: 44px height (mobile accessibility for kids — fingers larger than adults)
 - Car circle within space: 60% of cell width (single car), 40% per circle (quadrant split)
 
