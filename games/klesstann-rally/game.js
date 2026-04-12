@@ -384,6 +384,8 @@
     var isShop = viewName === "shop";
     var isFinished = viewName === "finished";
 
+    document.body.classList.toggle("race-active", isRacing);
+
     homeViewEl.classList.toggle("hidden", !isHome);
     trackBoardEl.classList.toggle("hidden", !isRacing);
     standingsPanelEl.classList.toggle("hidden", !isRacing);
@@ -757,6 +759,7 @@
 
     // Route to correct view based on saved phase
     if (state.phase === "racing") {
+      document.body.classList.add("race-active");
       showView("racing");
       renderAll();
       rollBtnEl.style.display = "";

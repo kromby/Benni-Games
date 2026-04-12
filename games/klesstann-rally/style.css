@@ -529,6 +529,12 @@ header#top-bar {
   font-size: 16px;
 }
 
+/* ── Race-Active Viewport Lock ── */
+body.race-active {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 /* ── Mobile Breakpoint ── */
 @media (max-width: 599px) {
   body {
@@ -543,12 +549,33 @@ header#top-bar {
   }
 
   #track-board {
-    width: min(100vw - 16px, 480px);
+    width: min(calc(100vw - 16px), 220px);
     margin: 0 auto;
   }
 
   #standings-panel {
-    padding: 8px 16px;
+    padding: 4px 8px;
+  }
+
+  #standings-panel h2 {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .standing-row {
+    padding: 4px 0;
+  }
+
+  .standings-header {
+    font-size: 10px;
+  }
+
+  .standing-label {
+    font-size: 12px;
+  }
+
+  .position-badge {
+    font-size: 12px;
   }
 
   #standings-list {
@@ -557,9 +584,23 @@ header#top-bar {
     gap: 0 16px;
   }
 
+  .game-title {
+    font-size: 14px;
+  }
+
+  .lap-counter {
+    font-size: 14px;
+  }
+
+  #roll-area {
+    padding: 8px;
+  }
+
   #roll-btn {
     width: 100%;
     max-width: none;
+    font-size: 18px;
+    padding: 8px 24px;
   }
 
   .home-cards {
