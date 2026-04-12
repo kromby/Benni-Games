@@ -119,24 +119,6 @@ header#top-bar {
   width: 45%;
 }
 
-.cars-1 .car-circle {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-  width: 70%;
-}
-
-.cars-2 .car-circle {
-  width: 55%;
-}
-
-.cars-3 .car-circle {
-  width: 50%;
-}
-
-.cars-4 .car-circle {
-  width: 45%;
-}
-
 .car-player {
   border: 2px solid #ffffff;
 }
@@ -181,6 +163,32 @@ header#top-bar {
   margin-bottom: 8px;
 }
 
+.standings-header {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 2px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sh-pos {
+  min-width: 32px;
+}
+
+.sh-driver {
+  flex: 1;
+}
+
+.sh-lap {
+  margin-left: auto;
+}
+
 .standing-row {
   display: flex;
   flex-direction: row;
@@ -195,7 +203,7 @@ header#top-bar {
 }
 
 .position-badge {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   min-width: 32px;
 }
@@ -257,6 +265,23 @@ header#top-bar {
 #dice-result {
   margin-top: 8px;
   font-size: 14px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  justify-content: center;
+}
+
+#dice-result > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dice-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ── Results Screen ── */

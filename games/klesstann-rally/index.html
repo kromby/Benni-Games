@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Klesstinn Rally</title>
+  <title>Klesstann Rally</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header id="top-bar">
     <a href="../../" class="back-link">&larr; Til baka</a>
-    <span class="game-title">Klesstinn Rally</span>
+    <span class="game-title">Klesstann Rally</span>
     <span id="lap-counter" class="lap-counter">Hring 1 af 2</span>
   </header>
 
@@ -19,8 +19,13 @@
 
   <aside id="standings-panel">
     <h2>Sta&eth;a</h2>
+    <div class="standings-header">
+      <span class="sh-pos">S&aelig;ti</span>
+      <span class="sh-driver">Keppandi</span>
+      <span class="sh-lap">Hringur</span>
+    </div>
     <div id="standings-list">
-      <!-- 4 rows rendered by JS: position badge + car circle + label + lap -->
+      <!-- 4 rows rendered by JS -->
     </div>
   </aside>
 
@@ -32,7 +37,7 @@
   <div id="results-screen" class="hidden">
     <h2>Lokani&eth;ursta&eth;an</h2>
     <div id="results-list"></div>
-    <button id="restart-btn">Keppinn aftur!</button>
+    <button id="restart-btn">Keppa aftur!</button>
   </div>
 
   <script src="game.js"></script>

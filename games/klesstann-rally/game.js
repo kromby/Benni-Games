@@ -5,7 +5,7 @@
   var TRACK_SIZE = 20;
   var TOTAL_LAPS = 2;
   var CORNER_SPACES = [0, 5, 10, 15];
-  var SAVE_KEY = "klesstinn-rally-save";
+  var SAVE_KEY = "klesstann-rally-save";
   var AUTOSAVE_MS = 30000;
   var PRIZE_MONEY = [400, 250, 150, 75];
   var ENGINE_DICE_MAX = 4;
@@ -108,7 +108,6 @@
       // Cars at this space
       var spaceCars = carsAtSpace[i] || [];
       if (spaceCars.length > 0) {
-        space.classList.add("cars-" + spaceCars.length);
         for (j = 0; j < spaceCars.length; j++) {
           var circle = document.createElement("div");
           circle.className = "car-circle";
@@ -137,7 +136,7 @@
       // Position badge
       var badge = document.createElement("span");
       badge.className = "position-badge";
-      badge.textContent = (i + 1) + ". s\u00e6ti";
+      badge.textContent = (i + 1) + ".";
       if (i === 0) { badge.classList.add("first-place"); }
       row.appendChild(badge);
 
@@ -159,7 +158,7 @@
       if (car.finished) {
         lapSpan.textContent = "Loki\u00f0";
       } else {
-        lapSpan.textContent = "Hring " + Math.min(car.lap + 1, TOTAL_LAPS) + "/" + TOTAL_LAPS;
+        lapSpan.textContent = Math.min(car.lap + 1, TOTAL_LAPS) + "/" + TOTAL_LAPS;
       }
       row.appendChild(lapSpan);
 
@@ -291,13 +290,8 @@
       var row = document.createElement("div");
 
       var dot = document.createElement("span");
-      dot.style.display = "inline-block";
-      dot.style.width = "10px";
-      dot.style.height = "10px";
-      dot.style.borderRadius = "50%";
+      dot.className = "dice-dot";
       dot.style.background = cars[i].color;
-      dot.style.marginRight = "4px";
-      dot.style.verticalAlign = "middle";
       row.appendChild(dot);
 
       var txt = document.createElement("span");
@@ -424,10 +418,10 @@
   function bindEvents() {
     rollBtnEl.addEventListener("click", onRollClick);
     document.getElementById("restart-btn").addEventListener("click", function () {
+      window.removeEventListener("beforeunload", saveGame);
       localStorage.removeItem(SAVE_KEY);
       window.location.reload();
     });
-    // Save before unload
     window.addEventListener("beforeunload", saveGame);
   }
 
