@@ -84,34 +84,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TRCK-01 | — | Pending |
-| TRCK-02 | — | Pending |
-| TRCK-03 | — | Pending |
-| TRCK-04 | — | Pending |
-| TRCK-05 | — | Pending |
-| TRCK-06 | — | Pending |
-| RACEUI-01 | — | Pending |
-| RACEUI-02 | — | Pending |
-| RACEUI-03 | — | Pending |
-| ECON-01 | — | Pending |
-| ECON-02 | — | Pending |
-| ECON-03 | — | Pending |
-| ECON-04 | — | Pending |
-| ECON-05 | — | Pending |
-| ECON-06 | — | Pending |
-| ECON-07 | — | Pending |
-| AI-01 | — | Pending |
-| AI-02 | — | Pending |
-| PLAT-01 | — | Pending |
-| PLAT-02 | — | Pending |
-| PLAT-03 | — | Pending |
-| PLAT-04 | — | Pending |
+| TRCK-01 | Phase 1 | Pending |
+| TRCK-02 | Phase 1 | Pending |
+| TRCK-03 | Phase 1 | Pending |
+| TRCK-04 | Phase 1 | Pending |
+| TRCK-05 | Phase 1 | Pending |
+| TRCK-06 | Phase 1 | Pending |
+| RACEUI-01 | Phase 1 | Pending |
+| RACEUI-02 | Phase 1 | Pending |
+| RACEUI-03 | Phase 1 | Pending |
+| ECON-01 | Phase 2 | Pending |
+| ECON-02 | Phase 2 | Pending |
+| ECON-03 | Phase 2 | Pending |
+| ECON-04 | Phase 2 | Pending |
+| ECON-05 | Phase 2 | Pending |
+| ECON-06 | Phase 2 | Pending |
+| ECON-07 | Phase 2 | Pending |
+| AI-01 | Phase 2 | Pending |
+| AI-02 | Phase 2 | Pending |
+| PLAT-01 | Phase 3 | Pending |
+| PLAT-02 | Phase 3 | Pending |
+| PLAT-03 | Phase 3 | Pending |
+| PLAT-04 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after initial definition*
+*Last updated: 2026-04-12 after roadmap creation*
