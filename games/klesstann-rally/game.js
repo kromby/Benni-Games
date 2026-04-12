@@ -8,10 +8,28 @@
   var SAVE_KEY = "klesstann-rally-save";
   var AUTOSAVE_MS = 30000;
   var PRIZE_MONEY = [400, 250, 150, 75];
-  var ENGINE_DICE_MAX = 3;
-  var TIRE_DICE_MAX = 3;
   var CAR_COLORS = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"];
   var CAR_LABELS = ["\u00de\u00fa", "A1", "A2", "A3"];
+
+  // ── Upgrade Tiers ──
+  // Engine tiers: {min, max} for dice roll range (per D-01)
+  var UPGRADE_TIERS_ENGINE = [
+    { min: 1, max: 3 },   // Tier 0 (base): d3
+    { min: 1, max: 4 },   // Tier 1: d4
+    { min: 1, max: 6 },   // Tier 2: d6
+    { min: 2, max: 6 },   // Tier 3: d2-6 (higher floor)
+    { min: 3, max: 8 }    // Tier 4: d3-8 (highest floor)
+  ];
+
+  // Tire tiers: slowdown probability at corners (per D-02)
+  // Value = chance of slowdown (0.0 to 1.0)
+  var UPGRADE_TIERS_TIRES = [0.50, 0.40, 0.30, 0.20, 0.10];
+
+  // Upgrade costs per tier index 1-4 (tier 0 is free/base) (per D-03)
+  // Index 0 unused — tiers are bought from 1 to 4
+  var UPGRADE_COSTS = [0, 75, 150, 300, 500, 800];
+
+  var STARTING_MONEY = 100;
 
   // ── Track Coordinates ──
   var TRACK_COORDS = (function () {
@@ -34,26 +52,39 @@
 
   // ── Cars ──
   var cars = [
-    { id: "player", color: CAR_COLORS[0], label: CAR_LABELS[0], position: 0, lap: 0, finished: false, finishOrder: 0 },
-    { id: "ai1",    color: CAR_COLORS[1], label: CAR_LABELS[1], position: 0, lap: 0, finished: false, finishOrder: 0 },
-    { id: "ai2",    color: CAR_COLORS[2], label: CAR_LABELS[2], position: 0, lap: 0, finished: false, finishOrder: 0 },
-    { id: "ai3",    color: CAR_COLORS[3], label: CAR_LABELS[3], position: 0, lap: 0, finished: false, finishOrder: 0 }
+    { id: "player", color: CAR_COLORS[0], label: CAR_LABELS[0], position: 0, lap: 0, finished: false, finishOrder: 0, money: STARTING_MONEY, engineTier: 0, tireTier: 0 },
+    { id: "ai1",    color: CAR_COLORS[1], label: CAR_LABELS[1], position: 0, lap: 0, finished: false, finishOrder: 0, money: STARTING_MONEY, engineTier: 0, tireTier: 0 },
+    { id: "ai2",    color: CAR_COLORS[2], label: CAR_LABELS[2], position: 0, lap: 0, finished: false, finishOrder: 0, money: STARTING_MONEY, engineTier: 0, tireTier: 0 },
+    { id: "ai3",    color: CAR_COLORS[3], label: CAR_LABELS[3], position: 0, lap: 0, finished: false, finishOrder: 0, money: STARTING_MONEY, engineTier: 0, tireTier: 0 }
   ];
 
   // ── Game State ──
   var state = {
-    phase: "racing",
+    phase: "home",  // Changed from "racing" — game starts at home per D-06
     round: 0,
-    finishCount: 0
+    finishCount: 0,
+    career: {
+      racesCompleted: 0,
+      wins: 0,
+      totalPrizeEarned: 0,
+      placements: [0, 0, 0, 0]  // count of 1st, 2nd, 3rd, 4th finishes for player
+    }
   };
 
   // ── DOM References ──
   var trackBoardEl, standingsListEl, lapCounterEl, rollBtnEl, diceResultEl, resultsScreenEl, resultsListEl;
   var spaceEls = [];
 
+  // ── View Management ──
+  var homeViewEl, shopViewEl;
+
   // ── Utility Functions ──
   function rollDie(sides) {
     return Math.floor(Math.random() * sides) + 1;
+  }
+
+  function rollDieRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   function calculateStandings() {
@@ -190,10 +221,32 @@
     renderTrack();
     renderStandings();
     renderHeader();
-    if (state.phase === "finished") {
-      showResults();
-      rollBtnEl.style.display = "none";
+  }
+
+  // ── View Management ──
+  function showView(viewName) {
+    // viewName: "home", "racing", "shop", "finished"
+    var isHome = viewName === "home";
+    var isRacing = viewName === "racing";
+    var isShop = viewName === "shop";
+    var isFinished = viewName === "finished";
+
+    homeViewEl.classList.toggle("hidden", !isHome);
+    trackBoardEl.classList.toggle("hidden", !isRacing);
+    standingsListEl.parentElement.classList.toggle("hidden", !isRacing);
+    document.getElementById("roll-area").classList.toggle("hidden", !isRacing);
+    shopViewEl.classList.toggle("hidden", !isShop);
+    resultsScreenEl.classList.toggle("hidden", !isFinished);
+
+    // Header content changes per view
+    if (isHome || isShop) {
+      lapCounterEl.textContent = cars[0].money + " kr.";
+    } else {
+      renderHeader();
     }
+
+    state.phase = viewName;
+    saveGame();
   }
 
   // ── Corner Callout ──
@@ -213,9 +266,10 @@
 
   // ── Race Logic ──
   function resolveCarMove(car) {
-    if (car.finished) { return { steps: 0, cornerHit: false, penalty: 0, engineRoll: 0, tireRoll: 0 }; }
+    if (car.finished) { return { steps: 0, cornerHit: false, penalty: 0, engineRoll: 0, tireRoll: 0, slowed: false }; }
 
-    var engineRoll = rollDie(ENGINE_DICE_MAX);
+    var tier = UPGRADE_TIERS_ENGINE[car.engineTier];
+    var engineRoll = rollDieRange(tier.min, tier.max);
     var totalSteps = engineRoll;
     var moved = 0;
     var cornerHit = false;
@@ -245,19 +299,20 @@
       // Corner check (once per turn max) per D-05
       if (!cornerChecked && CORNER_SPACES.indexOf(next) !== -1) {
         cornerChecked = true;
-        tireRoll = rollDie(TIRE_DICE_MAX);
-        penalty = Math.max(0, 2 - tireRoll);
         cornerHit = true;
-        if (penalty > 0) {
+        var slowChance = UPGRADE_TIERS_TIRES[car.tireTier];
+        var roll = Math.random();
+        if (roll < slowChance) {
+          penalty = 1;
           totalSteps = Math.max(moved, totalSteps - penalty);
-          showCallout(next, "H\u00e6gt! -" + penalty + " skref");
+          showCallout(next, "H\u00e6gt! -1 skref");
         } else {
           showCallout(next, "Hreint horn!");
         }
       }
     }
 
-    return { steps: moved, cornerHit: cornerHit, penalty: penalty, engineRoll: engineRoll, tireRoll: tireRoll };
+    return { steps: moved, cornerHit: cornerHit, penalty: penalty, engineRoll: engineRoll, tireRoll: tireRoll, slowed: penalty > 0 };
   }
 
   function resolveRound() {
@@ -278,6 +333,18 @@
         }
       }
       state.phase = "finished";
+
+      // Award prize money (per D-07: awarded when results screen appears)
+      for (var k = 0; k < cars.length; k++) {
+        var prize = PRIZE_MONEY[cars[k].finishOrder - 1];
+        cars[k].money += prize;
+      }
+      // Update career stats for player
+      state.career.racesCompleted++;
+      var playerOrder = cars[0].finishOrder;
+      state.career.placements[playerOrder - 1]++;
+      if (playerOrder === 1) { state.career.wins++; }
+      state.career.totalPrizeEarned += PRIZE_MONEY[playerOrder - 1];
     }
 
     return results;
@@ -297,7 +364,7 @@
       var txt = document.createElement("span");
       var label = cars[i].label + ": " + results[i].engineRoll;
       if (results[i].cornerHit) {
-        label += " (horn: " + results[i].tireRoll + ")";
+        label += results[i].slowed ? " (horn: h\u00e6gt!)" : " (horn: hreint)";
       }
       txt.textContent = label;
       row.appendChild(txt);
@@ -307,7 +374,6 @@
   }
 
   function showResults() {
-    resultsScreenEl.classList.remove("hidden");
     resultsListEl.innerHTML = "";
     var sorted = cars.slice().sort(function (a, b) { return a.finishOrder - b.finishOrder; });
     for (var i = 0; i < sorted.length; i++) {
@@ -353,19 +419,39 @@
     showDiceResults(results);
     if (state.phase === "finished") {
       showResults();
-      rollBtnEl.style.display = "none";
+      showView("finished");
     } else {
       rollBtnEl.disabled = false;
     }
+  }
+
+  // ── Race Management ──
+  function resetRace() {
+    for (var i = 0; i < cars.length; i++) {
+      cars[i].position = 0;
+      cars[i].lap = 0;
+      cars[i].finished = false;
+      cars[i].finishOrder = 0;
+    }
+    state.round = 0;
+    state.finishCount = 0;
+    state.phase = "racing";
   }
 
   // ── Save/Load ──
   function getSerializableState() {
     return {
       cars: cars.map(function (c) {
-        return { id: c.id, position: c.position, lap: c.lap, finished: c.finished, finishOrder: c.finishOrder };
+        return {
+          id: c.id, position: c.position, lap: c.lap,
+          finished: c.finished, finishOrder: c.finishOrder,
+          money: c.money, engineTier: c.engineTier, tireTier: c.tireTier
+        };
       }),
-      state: { phase: state.phase, round: state.round, finishCount: state.finishCount }
+      state: {
+        phase: state.phase, round: state.round, finishCount: state.finishCount,
+        career: state.career
+      }
     };
   }
 
@@ -398,18 +484,49 @@
           }
           cars[i].finished = !!data.cars[i].finished;
           cars[i].finishOrder = data.cars[i].finishOrder || 0;
+          // Validate money (number >= 0)
+          var money = data.cars[i].money;
+          if (typeof money === "number" && money >= 0) {
+            cars[i].money = money;
+          } else {
+            cars[i].money = STARTING_MONEY;
+          }
+          // Validate engineTier (integer 0..4)
+          var et = data.cars[i].engineTier;
+          if (typeof et === "number" && et >= 0 && et <= 4 && et === Math.floor(et)) {
+            cars[i].engineTier = et;
+          } else {
+            cars[i].engineTier = 0;
+          }
+          // Validate tireTier (integer 0..4)
+          var tt = data.cars[i].tireTier;
+          if (typeof tt === "number" && tt >= 0 && tt <= 4 && tt === Math.floor(tt)) {
+            cars[i].tireTier = tt;
+          } else {
+            cars[i].tireTier = 0;
+          }
         }
       }
       if (data.state) {
-        // Validate phase is one of "racing" or "finished"
-        var validPhases = ["racing", "finished"];
+        // Validate phase is one of "home", "racing", "finished", "shop"
+        var validPhases = ["home", "racing", "finished", "shop"];
         if (validPhases.indexOf(data.state.phase) !== -1) {
           state.phase = data.state.phase;
         } else {
-          state.phase = "racing";
+          state.phase = "home";
         }
         state.round = data.state.round || 0;
         state.finishCount = data.state.finishCount || 0;
+        // Restore career stats
+        if (data.state.career) {
+          var c = data.state.career;
+          if (typeof c.racesCompleted === "number") { state.career.racesCompleted = c.racesCompleted; }
+          if (typeof c.wins === "number") { state.career.wins = c.wins; }
+          if (typeof c.totalPrizeEarned === "number") { state.career.totalPrizeEarned = c.totalPrizeEarned; }
+          if (Array.isArray(c.placements) && c.placements.length === 4) {
+            state.career.placements = c.placements.slice();
+          }
+        }
       }
     } catch (e) { }
   }
@@ -417,10 +534,21 @@
   // ── Event Binding ──
   function bindEvents() {
     rollBtnEl.addEventListener("click", onRollClick);
-    document.getElementById("restart-btn").addEventListener("click", function () {
-      window.removeEventListener("beforeunload", saveGame);
-      localStorage.removeItem(SAVE_KEY);
-      window.location.reload();
+    document.getElementById("home-btn-results").addEventListener("click", function () {
+      showView("home");
+    });
+    document.getElementById("go-shop-btn").addEventListener("click", function () {
+      showView("shop");
+    });
+    document.getElementById("go-race-btn").addEventListener("click", function () {
+      resetRace();
+      renderAll();
+      showView("racing");
+    });
+    document.getElementById("shop-race-btn").addEventListener("click", function () {
+      resetRace();
+      renderAll();
+      showView("racing");
     });
     window.addEventListener("beforeunload", saveGame);
   }
@@ -434,8 +562,13 @@
     diceResultEl = document.getElementById("dice-result");
     resultsScreenEl = document.getElementById("results-screen");
     resultsListEl = document.getElementById("results-list");
+    homeViewEl = document.getElementById("home-view");
+    shopViewEl = document.getElementById("shop-view");
     loadGame();
-    renderAll();
+    showView(state.phase);
+    if (state.phase === "racing" || state.phase === "finished") {
+      renderAll();
+    }
     bindEvents();
     setInterval(saveGame, AUTOSAVE_MS);
   }
