@@ -266,7 +266,7 @@ header#top-bar {
 #dice-result {
   margin-top: 8px;
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
   justify-content: center;
