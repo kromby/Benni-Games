@@ -61,8 +61,8 @@ Plans:
   4. A 7-year-old can understand the current position, lap, balance, and upgrade choices at a glance without reading instructions
 **Plans:** 2 plans
 Plans:
-- [ ] 03-01-PLAN.md — Add Press Start 2P pixel font and replace car circles with PNG car sprite images
-- [ ] 03-02-PLAN.md — Mobile no-scroll race layout and final visual/functional verification
+- [x] 03-01-PLAN.md — Add Press Start 2P pixel font and replace car circles with PNG car sprite images
+- [x] 03-02-PLAN.md — Mobile no-scroll race layout and final visual/functional verification
 **UI hint**: yes
 
 ## Progress

@@ -40,8 +40,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Platform
 
 - [ ] **PLAT-01**: Pixel art visual style (8/16-bit retro) for cars, track, and UI elements
-- [ ] **PLAT-02**: Responsive layout — playable on mobile portrait (375px+) and desktop
-- [ ] **PLAT-03**: Endless mode — "Race again" after each race, no fixed season end
+- [x] **PLAT-02**: Responsive layout — playable on mobile portrait (375px+) and desktop
+- [x] **PLAT-03**: Endless mode — "Race again" after each race, no fixed season end
 - [ ] **PLAT-04**: Readable at a glance — large text, clear icons, no complex menus
 
 ## v2 Requirements
@@ -103,8 +103,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AI-01 | Phase 2 | Pending |
 | AI-02 | Phase 2 | Pending |
 | PLAT-01 | Phase 3 | Pending |
-| PLAT-02 | Phase 3 | Pending |
-| PLAT-03 | Phase 3 | Pending |
+| PLAT-02 | Phase 3 | Complete |
+| PLAT-03 | Phase 3 | Complete |
 | PLAT-04 | Phase 3 | Pending |
 
 **Coverage:**
