@@ -59,7 +59,10 @@ Plans:
   2. The game is fully playable in portrait on a 375px-wide phone screen with no broken layouts
   3. After any race result screen, a "Race again" action starts a new race with current upgrades — there is no hard stop
   4. A 7-year-old can understand the current position, lap, balance, and upgrade choices at a glance without reading instructions
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 03-01-PLAN.md — Add Press Start 2P pixel font and replace car circles with PNG car sprite images
+- [ ] 03-02-PLAN.md — Mobile no-scroll race layout and final visual/functional verification
 **UI hint**: yes
 
 ## Progress
@@ -71,4 +74,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Race Engine | 2/2 | Complete | 2026-04-12 |
 | 2. Economy Loop | 0/2 | Planning complete | - |
-| 3. Platform & Feel | 0/? | Not started | - |
+| 3. Platform & Feel | 0/2 | Planning complete | - |
