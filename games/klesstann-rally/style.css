@@ -333,16 +333,27 @@ header#top-bar {
 /* ── Home View ── */
 .home-view {
   grid-area: board;
+  max-width: 800px;
+  width: 100%;
+  justify-self: center;
+  align-self: start;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.home-card {
   background: var(--surface);
   border-radius: 12px;
   border: 1px solid var(--border);
   padding: 24px;
-  max-width: 480px;
-  width: 100%;
-  justify-self: center;
 }
 
-.home-stats h2 {
+.home-card h2 {
   font-size: 20px;
   font-weight: 700;
   color: var(--accent);
@@ -351,9 +362,8 @@ header#top-bar {
 
 .stat-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .stat-item {
@@ -517,8 +527,8 @@ header#top-bar {
     max-width: none;
   }
 
-  .home-view {
-    max-width: none;
+  .home-cards {
+    grid-template-columns: 1fr;
   }
 
   .shop-cards {
@@ -528,9 +538,5 @@ header#top-bar {
   .shop-view {
     max-width: none;
     padding: 8px;
-  }
-
-  .stat-grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
