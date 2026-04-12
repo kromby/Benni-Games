@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klesstinn Rally</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header id="top-bar">
+    <a href="../../" class="back-link">&larr; Til baka</a>
+    <span class="game-title">Klesstinn Rally</span>
+    <span id="lap-counter" class="lap-counter">Hring 1 af 2</span>
+  </header>
+
+  <main id="track-board">
+    <!-- 20 track-space divs rendered by JS via TRACK_COORDS -->
+  </main>
+
+  <aside id="standings-panel">
+    <h2>Sta&eth;a</h2>
+    <div id="standings-list">
+      <!-- 4 rows rendered by JS: position badge + car circle + label + lap -->
+    </div>
+  </aside>
+
+  <div id="roll-area">
+    <button id="roll-btn">R&uacute;lla!</button>
+    <div id="dice-result"></div>
+  </div>
+
+  <div id="results-screen" class="hidden">
+    <h2>Lokani&eth;ursta&eth;an</h2>
+    <div id="results-list"></div>
+    <button id="restart-btn">Keppinn aftur!</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

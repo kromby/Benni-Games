@@ -1,0 +1,359 @@
+:root {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-hover: #2a2a2a;
+  --text: #f5f5f5;
+  --text-dim: #999;
+  --accent: #e88a1a;
+  --border: #333;
+  --corner-border: #e6b800;
+  --corner-bg: rgba(230, 184, 0, 0.15);
+  --car-player: #e74c3c;
+  --car-ai1: #3498db;
+  --car-ai2: #2ecc71;
+  --car-ai3: #f39c12;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "board standings"
+    "roll roll";
+  grid-template-columns: 1fr 200px;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  padding: 8px;
+}
+
+/* ── Header ── */
+header#top-bar {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.back-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+.game-title {
+  flex: 1;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.lap-counter {
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Track Board ── */
+#track-board {
+  grid-area: board;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  width: min(80vw, 480px);
+  aspect-ratio: 1;
+  gap: 0px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 8px;
+  justify-self: center;
+}
+
+/* ── Track Space ── */
+.track-space {
+  position: relative;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+}
+
+.track-space.corner {
+  border-color: var(--corner-border);
+  background: var(--corner-bg);
+}
+
+.track-space.start .start-label {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Car Circle ── */
+.car-circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  width: 45%;
+}
+
+.cars-1 .car-circle {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  width: 70%;
+}
+
+.cars-2 .car-circle {
+  width: 55%;
+}
+
+.cars-3 .car-circle {
+  width: 50%;
+}
+
+.cars-4 .car-circle {
+  width: 45%;
+}
+
+.car-player {
+  border: 2px solid #ffffff;
+}
+
+/* ── Corner Callout ── */
+.callout {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #f5f5f5;
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  animation: callout-fade 1.5s ease forwards;
+}
+
+@keyframes callout-fade {
+  0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+
+/* ── Standings Panel ── */
+#standings-panel {
+  grid-area: standings;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  align-self: start;
+}
+
+#standings-panel h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.standing-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.standing-row:last-child {
+  border-bottom: none;
+}
+
+.position-badge {
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 32px;
+}
+
+.position-badge.first-place {
+  color: var(--accent);
+}
+
+.standing-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.standing-label {
+  font-size: 16px;
+}
+
+.standing-lap {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+
+/* ── Roll Area ── */
+#roll-area {
+  grid-area: roll;
+  text-align: center;
+  padding: 16px;
+}
+
+#roll-btn {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 24px;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  min-height: 44px;
+  width: 100%;
+  max-width: 320px;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+#roll-btn:hover:not(:disabled) {
+  transform: scale(1.04);
+  opacity: 0.92;
+}
+
+#roll-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#dice-result {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* ── Results Screen ── */
+#results-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+}
+
+#results-screen .results-inner {
+  background: var(--surface);
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+#results-screen h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.result-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 16px;
+  align-items: center;
+}
+
+.result-row.first-place {
+  color: var(--accent);
+}
+
+#restart-btn {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 24px;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  min-height: 44px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 16px;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+#restart-btn:hover {
+  transform: scale(1.04);
+  opacity: 0.92;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── Mobile Breakpoint ── */
+@media (max-width: 599px) {
+  body {
+    grid-template-areas:
+      "header"
+      "board"
+      "standings"
+      "roll";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    min-height: auto;
+  }
+
+  #track-board {
+    width: min(100vw - 16px, 480px);
+    margin: 0 auto;
+  }
+
+  #standings-panel {
+    padding: 8px 16px;
+  }
+
+  #standings-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+
+  #roll-btn {
+    width: 100%;
+    max-width: none;
+  }
+}
