@@ -49,6 +49,7 @@
 
   // ── DOM References ──
   var trackBoardEl, standingsListEl, lapCounterEl, rollBtnEl, diceResultEl, resultsScreenEl, resultsListEl;
+  var spaceEls = [];
 
   // ── Utility Functions ──
   function rollDie(sides) {
@@ -71,6 +72,7 @@
   // ── Render Functions ──
   function renderTrack() {
     trackBoardEl.innerHTML = "";
+    spaceEls = [];
 
     // Build lookup: space index -> array of cars at that position
     var carsAtSpace = {};
@@ -118,6 +120,7 @@
         }
       }
 
+      spaceEls[i] = space;
       trackBoardEl.appendChild(space);
     }
   }
@@ -188,6 +191,178 @@
     renderTrack();
     renderStandings();
     renderHeader();
+    if (state.phase === "finished") {
+      showResults();
+      rollBtnEl.style.display = "none";
+    }
+  }
+
+  // ── Corner Callout ──
+  function showCallout(spaceIndex, text) {
+    var spaceEl = spaceEls[spaceIndex];
+    if (!spaceEl) { return; }
+    var old = spaceEl.querySelector(".callout");
+    if (old) { old.parentNode.removeChild(old); }
+    var el = document.createElement("div");
+    el.className = "callout";
+    el.textContent = text;
+    spaceEl.appendChild(el);
+    setTimeout(function () {
+      if (el.parentNode) { el.parentNode.removeChild(el); }
+    }, 1600);
+  }
+
+  // ── Race Logic ──
+  function resolveCarMove(car) {
+    if (car.finished) { return { steps: 0, cornerHit: false, penalty: 0, engineRoll: 0, tireRoll: 0 }; }
+
+    var engineRoll = rollDie(ENGINE_DICE_MAX);
+    var totalSteps = engineRoll;
+    var moved = 0;
+    var cornerHit = false;
+    var penalty = 0;
+    var tireRoll = 0;
+    var cornerChecked = false;
+
+    while (moved < totalSteps && !car.finished) {
+      var prev = car.position;
+      var next = (prev + 1) % TRACK_SIZE;
+
+      // Lap wrap detection: crossing from space 19 to space 0
+      if (next === 0 && prev === TRACK_SIZE - 1) {
+        car.lap += 1;
+        if (car.lap >= TOTAL_LAPS) {
+          car.finished = true;
+          car.finishOrder = ++state.finishCount;
+          car.position = next;
+          moved++;
+          break;
+        }
+      }
+
+      car.position = next;
+      moved++;
+
+      // Corner check (once per turn max) per D-05
+      if (!cornerChecked && CORNER_SPACES.indexOf(next) !== -1) {
+        cornerChecked = true;
+        tireRoll = rollDie(TIRE_DICE_MAX);
+        penalty = Math.max(0, 3 - tireRoll);
+        cornerHit = true;
+        if (penalty > 0) {
+          totalSteps = Math.max(moved, totalSteps - penalty);
+          showCallout(next, "H\u00e6gt! -" + penalty + " skref");
+        } else {
+          showCallout(next, "Hreint horn!");
+        }
+      }
+    }
+
+    return { steps: moved, cornerHit: cornerHit, penalty: penalty, engineRoll: engineRoll, tireRoll: tireRoll };
+  }
+
+  function resolveRound() {
+    state.round++;
+    var results = [];
+    for (var i = 0; i < cars.length; i++) {
+      results.push(resolveCarMove(cars[i]));
+    }
+
+    // After ALL cars processed (Pitfall 4): check if any finished
+    if (state.finishCount > 0 && state.phase !== "finished") {
+      // Assign remaining cars their positions by current standings
+      var standings = calculateStandings();
+      for (var j = 0; j < standings.length; j++) {
+        if (!standings[j].finished) {
+          standings[j].finished = true;
+          standings[j].finishOrder = ++state.finishCount;
+        }
+      }
+      state.phase = "finished";
+    }
+
+    return results;
+  }
+
+  function showDiceResults(results) {
+    diceResultEl.innerHTML = "";
+    for (var i = 0; i < cars.length; i++) {
+      if (results[i].steps === 0) { continue; }
+      var row = document.createElement("div");
+
+      var dot = document.createElement("span");
+      dot.style.display = "inline-block";
+      dot.style.width = "10px";
+      dot.style.height = "10px";
+      dot.style.borderRadius = "50%";
+      dot.style.background = cars[i].color;
+      dot.style.marginRight = "4px";
+      dot.style.verticalAlign = "middle";
+      row.appendChild(dot);
+
+      var txt = document.createElement("span");
+      var label = cars[i].label + ": " + results[i].engineRoll;
+      if (results[i].cornerHit) {
+        label += " (horn: " + results[i].tireRoll + ")";
+      }
+      txt.textContent = label;
+      row.appendChild(txt);
+
+      diceResultEl.appendChild(row);
+    }
+  }
+
+  function showResults() {
+    resultsScreenEl.classList.remove("hidden");
+    resultsListEl.innerHTML = "";
+    var sorted = cars.slice().sort(function (a, b) { return a.finishOrder - b.finishOrder; });
+    for (var i = 0; i < sorted.length; i++) {
+      var car = sorted[i];
+      var row = document.createElement("div");
+      row.className = "result-row";
+      if (car.finishOrder === 1) { row.classList.add("first-place"); }
+
+      var pos = document.createElement("span");
+      pos.textContent = car.finishOrder + ". s\u00e6ti";
+      pos.style.fontWeight = "700";
+      pos.style.minWidth = "60px";
+      row.appendChild(pos);
+
+      var circle = document.createElement("span");
+      circle.style.display = "inline-block";
+      circle.style.width = "16px";
+      circle.style.height = "16px";
+      circle.style.borderRadius = "50%";
+      circle.style.background = car.color;
+      circle.style.flexShrink = "0";
+      row.appendChild(circle);
+
+      var lbl = document.createElement("span");
+      lbl.textContent = car.label;
+      row.appendChild(lbl);
+
+      var prize = document.createElement("span");
+      prize.textContent = PRIZE_MONEY[car.finishOrder - 1] + " kr.";
+      prize.style.marginLeft = "auto";
+      prize.style.fontWeight = "700";
+      row.appendChild(prize);
+
+      resultsListEl.appendChild(row);
+    }
+  }
+
+  function onRollClick() {
+    if (state.phase !== "racing") { return; }
+    rollBtnEl.disabled = true;
+    var results = resolveRound();
+    renderAll();
+    showDiceResults(results);
+    if (state.phase === "finished") {
+      showResults();
+      rollBtnEl.style.display = "none";
+    } else {
+      rollBtnEl.disabled = false;
+    }
   }
 
   // ── Save/Load ──
@@ -247,10 +422,9 @@
 
   // ── Event Binding ──
   function bindEvents() {
-    rollBtnEl.addEventListener("click", function () {
-      // Plan 02 implements onRollClick
-    });
+    rollBtnEl.addEventListener("click", onRollClick);
     document.getElementById("restart-btn").addEventListener("click", function () {
+      localStorage.removeItem(SAVE_KEY);
       window.location.reload();
     });
     // Save before unload
