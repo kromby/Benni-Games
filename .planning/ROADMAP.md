@@ -44,7 +44,10 @@ Plans:
   3. Between races the player sees a shop with engine and tire upgrades showing current dice range, upgraded dice range, and cost
   4. Buying an upgrade deducts its cost from the player's balance and the new dice range takes effect in the next race
   5. Three AI opponents automatically spend their money on upgrades they can afford between races
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — Economy data model, upgrade tier constants, tier-aware dice/penalties, prize money, save/load, HTML/CSS for home and shop views
+- [ ] 02-02-PLAN.md — Wire home page stats, shop buy mechanics, AI upgrade logic, navigation flow, and human verification
 **UI hint**: yes
 
 ### Phase 3: Platform & Feel
@@ -67,5 +70,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Race Engine | 2/2 | Complete | 2026-04-12 |
-| 2. Economy Loop | 0/? | Not started | - |
+| 2. Economy Loop | 0/2 | Planning complete | - |
 | 3. Platform & Feel | 0/? | Not started | - |
