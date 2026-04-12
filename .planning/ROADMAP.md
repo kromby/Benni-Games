@@ -12,7 +12,7 @@ Three phases deliver the race → earn → upgrade → race loop. Phase 1 builds
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Race Engine** - A complete race runs from start to finish with movement, corners, and lap tracking
+- [x] **Phase 1: Race Engine** - A complete race runs from start to finish with movement, corners, and lap tracking
 - [ ] **Phase 2: Economy Loop** - Prize money, upgrade shop, and AI opponents close the earn-upgrade-race loop
 - [ ] **Phase 3: Platform & Feel** - Pixel art visuals, responsive layout, and endless-race flow ship the product
 
@@ -30,8 +30,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. A results screen shows final finishing order and the prize money each racer earned
 **Plans:** 2 plans
 Plans:
-- [ ] 01-01-PLAN.md — Create game files with track board, car rendering, standings panel, and all visual foundation
-- [ ] 01-02-PLAN.md — Implement race engine logic (dice, movement, corners, laps) and wire interactive UI
+- [x] 01-01-PLAN.md — Create game files with track board, car rendering, standings panel, and all visual foundation
+- [x] 01-02-PLAN.md — Implement race engine logic (dice, movement, corners, laps) and wire interactive UI
 **UI hint**: yes
 
 ### Phase 2: Economy Loop
@@ -66,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Race Engine | 0/2 | Planning complete | - |
+| 1. Race Engine | 2/2 | Complete | 2026-04-12 |
 | 2. Economy Loop | 0/? | Not started | - |
 | 3. Platform & Feel | 0/? | Not started | - |
