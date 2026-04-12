@@ -289,7 +289,7 @@
       }
       buyBtn.style.display = "";
       buyBtn.disabled = player.money < cost;
-      buyBtn.textContent = player.money < cost ? "Efni\u00f0 ekki (" + cost + " kr.)" : "Kaupa \u2014 " + cost + " kr.";
+      buyBtn.textContent = "Kaupa (" + cost + " kr.)";
     }
   }
 
@@ -704,10 +704,20 @@
       rollBtnEl.disabled = false;
     });
 
-    // Shop -> Home (per D-04: "Keppa!" in shop returns to home per D-07 flow)
-    document.getElementById("shop-race-btn").addEventListener("click", function () {
+    // Shop -> Home
+    document.getElementById("shop-home-btn").addEventListener("click", function () {
       renderHome();
       showView("home");
+    });
+
+    // Shop -> Race
+    document.getElementById("shop-race-btn").addEventListener("click", function () {
+      runAiUpgrades();
+      resetRace();
+      showView("racing");
+      renderAll();
+      rollBtnEl.style.display = "";
+      rollBtnEl.disabled = false;
     });
 
     // Shop buy buttons
