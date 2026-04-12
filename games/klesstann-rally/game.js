@@ -8,8 +8,8 @@
   var SAVE_KEY = "klesstann-rally-save";
   var AUTOSAVE_MS = 30000;
   var PRIZE_MONEY = [400, 250, 150, 75];
-  var ENGINE_DICE_MAX = 4;
-  var TIRE_DICE_MAX = 4;
+  var ENGINE_DICE_MAX = 3;
+  var TIRE_DICE_MAX = 3;
   var CAR_COLORS = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"];
   var CAR_LABELS = ["\u00de\u00fa", "A1", "A2", "A3"];
 
@@ -97,7 +97,7 @@
         space.classList.add("start");
         var sfLabel = document.createElement("span");
         sfLabel.className = "start-label";
-        sfLabel.textContent = "S/F";
+        sfLabel.textContent = "\uD83C\uDFC1";
         space.appendChild(sfLabel);
       }
 
@@ -246,7 +246,7 @@
       if (!cornerChecked && CORNER_SPACES.indexOf(next) !== -1) {
         cornerChecked = true;
         tireRoll = rollDie(TIRE_DICE_MAX);
-        penalty = Math.max(0, 3 - tireRoll);
+        penalty = Math.max(0, 2 - tireRoll);
         cornerHit = true;
         if (penalty > 0) {
           totalSteps = Math.max(moved, totalSteps - penalty);
