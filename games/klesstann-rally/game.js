@@ -150,13 +150,16 @@
       var spaceCars = carsAtSpace[i] || [];
       if (spaceCars.length > 0) {
         for (j = 0; j < spaceCars.length; j++) {
-          var circle = document.createElement("div");
-          circle.className = "car-circle";
-          circle.style.background = spaceCars[j].color;
+          var img = document.createElement("img");
+          img.className = "car-img";
+          var carIndex = ["player","ai1","ai2","ai3"].indexOf(spaceCars[j].id);
+          var colorNames = ["red","blue","green","yellow"];
+          img.src = "images/car-" + colorNames[carIndex] + ".png";
+          img.alt = spaceCars[j].label;
           if (spaceCars[j].id === "player") {
-            circle.classList.add("car-player");
+            img.classList.add("car-player");
           }
-          space.appendChild(circle);
+          space.appendChild(img);
         }
       }
 
