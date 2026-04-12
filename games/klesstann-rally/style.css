@@ -374,11 +374,25 @@ header#top-bar {
   border: 1px solid var(--border);
 }
 
+.stat-emoji {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
 .stat-value {
   display: block;
   font-size: 20px;
   font-weight: 700;
   color: var(--text);
+  margin-bottom: 2px;
+}
+
+.stat-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
   margin-bottom: 4px;
 }
 
@@ -388,6 +402,15 @@ header#top-bar {
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.medals-grid {
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-bottom: 12px;
+}
+
+.race-grid {
+  grid-template-columns: 1fr 1fr;
 }
 
 .home-actions {

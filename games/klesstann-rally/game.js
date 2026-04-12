@@ -236,26 +236,22 @@
   // ── Home Page Rendering (per D-06) ──
   function renderHome() {
     var p = cars[0]; // player
-    document.getElementById("stat-races").textContent = state.career.racesCompleted;
-    document.getElementById("stat-wins").textContent = state.career.wins;
-    document.getElementById("stat-earned").textContent = state.career.totalPrizeEarned + " kr.";
 
     var eTier = UPGRADE_TIERS_ENGINE[p.engineTier];
-    document.getElementById("stat-engine").textContent = "Stig " + p.engineTier + " (" + eTier.min + "-" + eTier.max + ")";
+    document.getElementById("stat-engine").textContent = "Stig " + p.engineTier;
+    document.getElementById("stat-engine-range").textContent = eTier.min + "\u2013" + eTier.max + " skref";
 
     var tChance = Math.round(UPGRADE_TIERS_TIRES[p.tireTier] * 100);
-    document.getElementById("stat-tires").textContent = "Stig " + p.tireTier + " (" + tChance + "%)";
+    document.getElementById("stat-tires").textContent = "Stig " + p.tireTier;
+    document.getElementById("stat-tires-chance").textContent = tChance + "% h\u00e6ging";
 
-    // Placement breakdown: "1x1., 2x2., ..."
     var pl = state.career.placements;
-    var parts = [];
-    var placeLabels = ["1.", "2.", "3.", "4."];
-    for (var i = 0; i < pl.length; i++) {
-      if (pl[i] > 0) {
-        parts.push(pl[i] + "x" + placeLabels[i]);
-      }
-    }
-    document.getElementById("stat-placements").textContent = parts.length > 0 ? parts.join(", ") : "-";
+    document.getElementById("stat-gold").textContent = pl[0];
+    document.getElementById("stat-silver").textContent = pl[1];
+    document.getElementById("stat-bronze").textContent = pl[2];
+
+    document.getElementById("stat-races").textContent = state.career.racesCompleted;
+    document.getElementById("stat-earned").textContent = state.career.totalPrizeEarned + " kr.";
   }
 
   // ── Shop Rendering (per D-04) ──
