@@ -468,10 +468,19 @@ header#top-bar {
 }
 
 .shop-card h3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   font-size: 18px;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: 12px;
+}
+
+.shop-card-emoji {
+  font-size: 28px;
+  line-height: 1;
 }
 
 .shop-current {
