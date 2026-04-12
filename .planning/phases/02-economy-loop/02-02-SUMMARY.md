@@ -3,18 +3,18 @@ phase: 02-economy-loop
 plan: 02
 subsystem: economy-loop-interactivity
 tags: [economy, shop, home-stats, ai-upgrade, navigation, vanilla-js, iife]
-status: partial (awaiting human-verify checkpoint)
+status: complete
 
 # Dependency graph
 requires:
   - 02-01
 provides:
-  - "renderHome(): live career stats display (races, wins, earned, engine/tire tiers, placements)"
-  - "renderShop() + renderShopCard(): upgrade cards with current/next tier, buy/disable/maxed states"
+  - "renderHome(): live career stats — medals (🥇🥈🥉), race count, prize total, engine/tire tier with range/penalty"
+  - "renderShop() + renderShopCard(): upgrade cards with emoji headers, current/next tier, buy/disable/maxed states"
   - "buyUpgrade(type): cost-validated purchase that deducts money and increments tier"
   - "AI_PERSONALITIES: engine/tires/balanced with 20-30% saveChance"
   - "aiUpgrade(carIndex) + runAiUpgrades(): personality-based AI upgrade between races"
-  - "Full navigation: home->shop->home, home->race->results->home"
+  - "Full navigation: home->shop->home, home->race->results->home, shop->race directly"
 affects: []
 
 # Tech tracking
@@ -26,86 +26,83 @@ key-files:
   created: []
   modified:
     - games/klesstann-rally/game.js
+    - games/klesstann-rally/index.html
+    - games/klesstann-rally/style.css
 
 key-decisions:
-  - "shop-race-btn returns to home (not directly to race) per D-07 loop flow"
-  - "AI upgrades run at race start (go-race-btn click), not when entering shop"
+  - "Home screen uses two cards side-by-side: Bíllinn (engine/tires) and Ferill (medals + race stats)"
+  - "Career card shows 🥇🥈🥉 medal boxes (3-col) and Keppnir+Unnið below (2-col) — replaces Sigrar+Staða"
+  - "Vél/Dekk boxes on home are 4-line: emoji, tier, range/penalty, label"
+  - "Shop cards use same big stacked emoji pattern as home boxes"
+  - "shop-race-btn goes directly to race (runs AI upgrades); shop-home-btn returns to home"
+  - "Buy buttons show 'Kaupa (X kr.)' format; disabled opacity communicates affordability"
+  - "AI upgrades run at race start (go-race-btn or shop-race-btn click)"
   - "buyUpgrade validates nextTier <= 4 and player.money >= cost before any mutation (T-02-06)"
-  - "rollBtnEl.style.display hidden on finish so Heim button is the clear next action"
   - "init() routes based on state.phase for correct persistence across page reload"
 
 # Metrics
-duration: in-progress
+duration: ~1 hour (including human-verify UI iterations)
 completed: 2026-04-12
 ---
 
 # Phase 2 Plan 02: Economy Loop Interactivity Summary
 
-**Complete earn-upgrade-race loop: home page with live career stats, shop with tier upgrade cards and buy mechanics, AI personality-based upgrades, and full view navigation**
-
-## Status
-
-Task 1 complete (committed). Awaiting Task 2 (human-verify checkpoint).
+**Complete earn-upgrade-race loop with home dashboard, shop, AI upgrades, and full navigation. Human-verified and approved.**
 
 ## Performance
 
-- **Duration:** in-progress
-- **Started:** 2026-04-12
-- **Tasks completed:** 1 of 2 (Task 2 is human-verify checkpoint)
-- **Files modified:** 1
+- **Duration:** ~1 hour
+- **Completed:** 2026-04-12
+- **Tasks completed:** 2 of 2 (Task 2: human-verify approved)
+- **Files modified:** 3
 
 ## Accomplishments
 
-### Task 1: Implement renderHome, renderShop, buyUpgrade, AI upgrade logic, and wire all navigation
+### Task 1: Core interactivity (game.js)
 
-- Added `AI_PERSONALITIES` constant: index 0=null (player), index 1=engine/0.25, index 2=tires/0.20, index 3=balanced/0.30
-- Added `renderHome()`: populates stat-races, stat-wins, stat-earned, stat-engine (with tier+range), stat-tires (with tier+%), stat-placements (breakdown like "1x1., 2x2.")
-- Added `renderShopCard(type)`: shows current tier info, next tier info+cost, disables buy when unaffordable, hides button and shows "Hámark!" when maxed (nextTier > 4)
-- Added `renderShop()`: calls renderShopCard for both "engine" and "tires"
-- Added `buyUpgrade(type)`: validates tier <=4 and money >= cost, deducts cost, increments tier, re-renders shop, updates header balance, saves game
-- Added `aiUpgrade(carIndex)`: checks personality saveChance (skip), then picks preferred upgrade type (70/30 or 50/50 split), tries preferred first then fallback, buys at most one upgrade
-- Added `runAiUpgrades()`: loops cars[1..3] calling aiUpgrade
-- Replaced `bindEvents()` entirely: go-shop-btn (renderShop+showView), go-race-btn (runAiUpgrades+resetRace+showView+renderAll+show rollBtn), shop-race-btn (renderHome+showView home), buy-engine-btn/buy-tires-btn (buyUpgrade), home-btn-results (renderHome+showView home), beforeunload saveGame
-- Updated `onRollClick()`: adds `rollBtnEl.style.display = "none"` on race finish
-- Updated `init()`: routes to correct view with renderHome/renderShop/showResults/renderAll based on state.phase
+- `AI_PERSONALITIES`: index 0=null (player), 1=engine/0.25, 2=tires/0.20, 3=balanced/0.30
+- `renderHome()`: writes medal counts (stat-gold/silver/bronze), tier+range to stat-engine/stat-engine-range, tier+% to stat-tires/stat-tires-chance, race count and prize total
+- `renderShopCard(type)`: current tier info, next tier info+cost ("Kaupa (X kr.)"), disabled when unaffordable, "Hámark!" when maxed
+- `buyUpgrade(type)`: validates tier ≤4 and money ≥ cost, deducts, increments, re-renders, saves
+- `aiUpgrade(carIndex)` + `runAiUpgrades()`: personality-driven upgrade with save chance skip
+- `bindEvents()`: all navigation wired — home↔shop, home→race, shop→race, results→home
+- `init()`: routes to correct view on load based on state.phase
 
-## Task Commits
+### Task 2: Human-verify UI iterations (index.html + style.css + game.js)
 
-1. **Task 1: renderHome, renderShop, buyUpgrade, AI upgrade, navigation wiring** - `27f9a67` (feat)
+During verification the following UI improvements were made and approved:
 
-## Files Created/Modified
+- **Home screen two-card layout**: "Bíllinn" card (engine+tire) and "Ferill" card (medals+stats) side by side on desktop, stacked on mobile
+- **Career card medals**: 🥇🥈🥉 medal row (3-col) replacing Sigrar+Staða; Keppnir+Unnið row below
+- **4-line Vél/Dekk boxes**: ⚙️/🛞 emoji at top, tier, dice range/penalty, label — matches home card weight
+- **Shop card headings**: same big stacked emoji pattern (⚙️ Vél, 🛞 Dekk)
+- **Shop footer**: two buttons — 🏠 Heim (→ home) and 🏁 Keppa! (→ race directly)
+- **Button labels**: 🛠️ Verkstæði (was Búð), 🏁 Keppa! on all race buttons
+- **Buy format**: "Kaupa (75 kr.)" — cost always visible, disabled state uses opacity
 
-- `games/klesstann-rally/game.js` - +205/-9 lines: AI_PERSONALITIES, renderHome, renderShopCard, renderShop, buyUpgrade, aiUpgrade, runAiUpgrades, updated bindEvents, updated onRollClick, updated init
+## Commits
 
-## Decisions Made
+1. `27f9a67` feat(02-02): implement renderHome, renderShop, buyUpgrade, AI upgrade logic, and wire all navigation
+2. `522c09c` fix(02-02): redesign home screen with two cards and emoji buttons
+3. `038cfb8` fix(02-02): rework home stats — medals, 4-line car boxes, emoji
+4. `8afd743` fix(02-02): shop emojis, Heim button, Kaupa (X kr.) format
+5. `ed67d28` fix(02-02): big stacked emojis in shop cards, 🏠 on Heim button
 
-- `shop-race-btn` navigates to home (not directly to race) — keeps D-07 flow: home is always the hub
-- AI upgrades triggered at race start (go-race-btn) rather than at shop entry — AI "decides" when player commits to racing
-- T-02-06 mitigation: `buyUpgrade` checks `nextTier > 4` and `player.money < cost` before any mutation
+## Files Modified
 
-## Deviations from Plan
-
-None — plan executed exactly as written.
+- `games/klesstann-rally/game.js` — renderHome, renderShopCard, renderShop, buyUpgrade, aiUpgrade, runAiUpgrades, bindEvents, onRollClick, init
+- `games/klesstann-rally/index.html` — two-card home layout, medal boxes, 4-line car boxes, shop emoji headings, shop footer buttons
+- `games/klesstann-rally/style.css` — home-cards grid, home-card, medals-grid, race-grid, stat-emoji, stat-sub, shop-card-emoji
 
 ## Threat Model Compliance
 
-- T-02-06 (buyUpgrade cost check): Mitigated — validates `player.money >= cost` and `nextTier <= 4` before any mutation
-- T-02-07 (AI upgrade bypass): Accepted — single-player, client-side
-- T-02-08 (Purchase history): Accepted — no audit trail needed
-- T-02-09 (state.phase manipulation): Accepted — client-side only
-
-## Known Stubs
-
-None — all stat display elements and shop card elements are now fully wired to game state.
+- T-02-06 (buyUpgrade cost check): Mitigated — validates `player.money >= cost` and `nextTier <= 4`
+- T-02-07/08/09: Accepted — single-player client-side game
 
 ## Self-Check: PASSED
 
-- `27f9a67` exists in git log
-- `function renderHome` present in game.js (1 match)
-- `function renderShop` present in game.js (2 matches: renderShopCard + renderShop)
-- `function buyUpgrade` present in game.js (1 match)
-- `function aiUpgrade` present in game.js (1 match)
-- `AI_PERSONALITIES` present in game.js (2 matches: declaration + usage)
-- All navigation IDs wired in bindEvents
-- No `restart-btn` reference in bindEvents
-- `node --check` syntax validation: PASSED
+- All 5 commits present in git log
+- `function renderHome`, `function renderShop`, `function buyUpgrade`, `function aiUpgrade` all present
+- `AI_PERSONALITIES` defined and used
+- `shop-home-btn` and `shop-race-btn` both wired in bindEvents
+- No `restart-btn` or `stat-wins`/`stat-placements` references remain
