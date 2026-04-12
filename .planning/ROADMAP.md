@@ -28,7 +28,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The race completes after two laps; the first car to finish triggers the race-end condition
   4. Live position (1st/2nd/3rd/4th) and current lap ("Lap 1 of 2") update correctly each round
   5. A results screen shows final finishing order and the prize money each racer earned
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Create game files with track board, car rendering, standings panel, and all visual foundation
+- [ ] 01-02-PLAN.md — Implement race engine logic (dice, movement, corners, laps) and wire interactive UI
 **UI hint**: yes
 
 ### Phase 2: Economy Loop
@@ -63,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Race Engine | 0/? | Not started | - |
+| 1. Race Engine | 0/2 | Planning complete | - |
 | 2. Economy Loop | 0/? | Not started | - |
 | 3. Platform & Feel | 0/? | Not started | - |
