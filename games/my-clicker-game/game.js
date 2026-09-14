@@ -47,7 +47,7 @@
   }
 
   function rebirthMultiplier() {
-    return 1 + rebirthCount;
+    return 1 + rebirthCount + ultraRebirthCount * ULTRA_REBIRTH_GAIN;
   }
 
   function ultraRebirthCost() {
@@ -332,7 +332,6 @@
     buildings.forEach(function (b) {
       b.owned = 0;
     });
-    rebirthCount += ULTRA_REBIRTH_GAIN;
     ultraRebirthCount += 1;
     updateCps();
     render();
