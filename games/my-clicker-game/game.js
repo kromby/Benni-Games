@@ -10,6 +10,8 @@
   var kokurPerSekunda = 0;
   var lastTime = performance.now();
   var rebirthCount = 0;
+  var ultraRebirthCount = 0;
+  var ULTRA_REBIRTH_GAIN = 10;
 
   var upgrades = [
     { id: "betri-mus", name: "Betri mús", baseCost: 50, owned: 0, bonus: 1 },
@@ -48,6 +50,10 @@
     return 1 + rebirthCount;
   }
 
+  function ultraRebirthCost() {
+    return Math.floor(1e8 * Math.pow(10, ultraRebirthCount));
+  }
+
   function updateCps() {
     var baseCps = buildings.reduce(function (sum, b) {
       return sum + b.owned * b.cps;
@@ -76,6 +82,7 @@
       kokurPerSekunda: kokurPerSekunda,
       lastTime: lastTime,
       rebirthCount: rebirthCount,
+      ultraRebirthCount: ultraRebirthCount,
       upgradeOwned: upgrades.map(function (u) { return u.owned; }),
       buildingOwned: buildings.map(function (b) { return b.owned; }),
     };
@@ -100,6 +107,7 @@
 
       kokur = data.kokur;
       rebirthCount = data.rebirthCount || 0;
+      ultraRebirthCount = data.ultraRebirthCount || 0;
       lastTime = typeof data.lastTime === "number" ? data.lastTime : performance.now();
 
       if (Array.isArray(data.upgradeOwned)) {
@@ -150,6 +158,8 @@
   var rebirthBtn = document.getElementById("rebirth-btn");
   var rebirthCostDisplay = document.getElementById("rebirth-cost-display");
   var rebirthMultDisplay = document.getElementById("rebirth-mult-display");
+  var ultraRebirthBtn = document.getElementById("ultra-rebirth-btn");
+  var ultraRebirthCostDisplay = document.getElementById("ultra-rebirth-cost-display");
 
   // ─── Render ─────────────────────────────────────────────────────────────
   function renderScore() {
@@ -217,6 +227,7 @@
   function canAffordSomething() {
     var i;
     if (kokur >= rebirthCost()) return true;
+    if (kokur >= ultraRebirthCost()) return true;
     for (i = 0; i < upgrades.length; i++) {
       if (kokur >= upgradeCost(upgrades[i])) return true;
     }
@@ -235,6 +246,13 @@
     rebirthBtn.disabled = !canAfford;
   }
 
+  function renderUltraRebirth() {
+    if (!ultraRebirthBtn || !ultraRebirthCostDisplay) return;
+    var cost = ultraRebirthCost();
+    ultraRebirthCostDisplay.textContent = formatNumber(cost) + " FH";
+    ultraRebirthBtn.disabled = kokur < cost;
+  }
+
   function updateShopBadge() {
     if (!shopBadge) return;
     if (canAffordSomething()) {
@@ -251,6 +269,7 @@
     renderUpgrades();
     renderBuildings();
     renderRebirth();
+    renderUltraRebirth();
     updateShopBadge();
   }
 
@@ -302,6 +321,24 @@
     save();
   }
 
+  function doUltraRebirth() {
+    var cost = ultraRebirthCost();
+    if (kokur < cost) return;
+    kokur = 0;
+    kokurPerSmell = 1;
+    upgrades.forEach(function (u) {
+      u.owned = 0;
+    });
+    buildings.forEach(function (b) {
+      b.owned = 0;
+    });
+    rebirthCount += ULTRA_REBIRTH_GAIN;
+    ultraRebirthCount += 1;
+    updateCps();
+    render();
+    save();
+  }
+
   // ─── Game loop ─────────────────────────────────────────────────────────
   var lastRenderTime = 0;
   var RENDER_INTERVAL_MS = 200;
@@ -318,6 +355,7 @@
         renderUpgrades();
         renderBuildings();
         renderRebirth();
+        renderUltraRebirth();
       }
     }
     requestAnimationFrame(tick);
@@ -340,6 +378,7 @@
   if (shopModalBackdrop) shopModalBackdrop.addEventListener("click", closeShop);
   if (shopModalClose) shopModalClose.addEventListener("click", closeShop);
   if (rebirthBtn) rebirthBtn.addEventListener("click", doRebirth);
+  if (ultraRebirthBtn) ultraRebirthBtn.addEventListener("click", doUltraRebirth);
 
   // ─── Init ───────────────────────────────────────────────────────────────
   loadSave();

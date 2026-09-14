@@ -371,6 +371,15 @@ body {
   opacity: 0.8;
 }
 
+.ultra-rebirth-btn {
+  background: linear-gradient(145deg, #b45309, #92400e);
+  border-color: #d97706;
+}
+
+.ultra-rebirth-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #d97706, #b45309);
+}
+
 @media (max-width: 700px) {
   .shop-trigger {
     margin-left: 0;
