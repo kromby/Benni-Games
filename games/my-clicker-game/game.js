@@ -26,7 +26,7 @@
     { id: "kokualdur", name: "FH-aldur", baseCost: 2000, owned: 0, cps: 20 },
     { id: "kokuveldi", name: "FH-veldi", baseCost: 5000, owned: 0, cps: 50 },
     { id: "kokuheimur", name: "FH-heimur", baseCost: 20000, owned: 0, cps: 100 },
-    { id: "kokukosmos", name: "FH-kosmos", baseCost: 100000, owned: 0, cps: 10000 },
+    { id: "kokukosmos", name: "FH-kosmos", baseCost: 100000, owned: 0, cps: 1000 },
     { id: "framleidslutvofoldun", name: "Framleiðslutvöföldun", baseCost: 500000, owned: 0, cpsMultiply: true },
   ];
 
